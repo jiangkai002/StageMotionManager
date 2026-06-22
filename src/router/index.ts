@@ -20,6 +20,12 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true, title: '舞台运动' },
   },
   {
+    path: '/flex-demo',
+    name: 'flex-demo',
+    component: () => import('../components/FlexLayoutDemo.vue'),
+    meta: { requiresAuth: false, title: 'Flex布局演示' },
+  },
+  {
     path: '/backstage',
     component: () => import('../backstage/StageManagerBackstage.vue'),
     meta: { requiresAuth: true, title: '后台管理' },

@@ -2,6 +2,9 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores'
+import logo from '@/assets/logo.png'
+import modelUpload from '@/assets/modelUpload.svg'
+import stageMotion from '@/assets/stageMotion.svg'
 
 const route = useRoute()
 const router = useRouter()
@@ -29,9 +32,9 @@ function handleLogout() {
   <el-container class="backstage-page">
     <el-aside class="backstage-aside" width="232px">
       <div class="brand">
-        <div class="brand-mark">SM</div>
+        <img :src="logo" class="brand-mark" alt="logo" />
         <div>
-          <h1>StageManager</h1>
+          <h1>舞台运动管理</h1>
           <p>后台管理</p>
         </div>
       </div>
@@ -39,17 +42,17 @@ function handleLogout() {
       <el-menu
         class="backstage-menu"
         :default-active="activeMenu"
-        background-color="#101828"
-        text-color="#cbd5e1"
+        background-color="#ffffff"
+        text-color="#1f2937"
         active-text-color="#ffffff"
         @select="handleMenuSelect"
       >
         <el-menu-item index="/backstage/settings/model-upload">
-          <span class="menu-icon">M</span>
+          <img :src="modelUpload" class="menu-icon" />
           <span>模型上传</span>
         </el-menu-item>
         <el-menu-item index="/backstage/settings/element-motion">
-          <span class="menu-icon">E</span>
+          <img :src="stageMotion" class="menu-icon" />
           <span>元素运动配置</span>
         </el-menu-item>
       </el-menu>
@@ -95,7 +98,7 @@ function handleLogout() {
 .backstage-aside {
   display: flex;
   flex-direction: column;
-  background: #101828;
+  background: #286afe;
   border-right: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -148,6 +151,14 @@ function handleLogout() {
   background: #2563eb;
 }
 
+.backstage-menu :deep(.el-menu-item:hover) {
+  color: #2563eb;
+}
+
+.backstage-menu :deep(.el-menu-item.is-active:hover) {
+  color: #ffffff;
+}
+
 .menu-icon {
   display: inline-grid;
   width: 22px;
@@ -157,7 +168,7 @@ function handleLogout() {
   font-size: 12px;
   font-weight: 700;
   color: #101828;
-  background: #e2e8f0;
+  background: transparent;
   border-radius: 6px;
 }
 
