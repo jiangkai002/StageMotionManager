@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 import { useUserStore } from '@/stores'
 
 const routes: RouteRecordRaw[] = [
@@ -12,15 +11,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/',
-    name: 'home',
-    component: HomeView,
-    meta: { requiresAuth: true, title: '首页' },
-  },
-  {
-    path: '/about',
-    name: 'about',
-    component: () => import('../views/AboutView.vue'),
-    meta: { requiresAuth: true, title: '关于' },
+    redirect: '/stage-motion',
   },
   {
     path: '/stage-motion',
