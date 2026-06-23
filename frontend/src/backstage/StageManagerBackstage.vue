@@ -6,16 +6,45 @@ import logo from '@/assets/logo.png'
 import modelUpload from '@/assets/modelUpload.svg'
 import stageMotion from '@/assets/stageMotion.svg'
 
+interface NavigationItem {
+  path: string
+  title: string
+  description: string
+  icon: string
+}
+
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 
+const navigationItems: NavigationItem[] = [
+  {
+    path: '/backstage/settings/model-upload',
+    title: '模型上传',
+    description: '维护舞台模型资源',
+    icon: modelUpload,
+  },
+  {
+    path: '/backstage/settings/element-motion',
+    title: '元素运动配置',
+    description: '配置元素运动参数',
+    icon: stageMotion,
+  },
+]
+
 const activeMenu = computed(() => route.path)
-const pageTitle = computed(() => String(route.meta.title ?? '后台管理'))
+const currentNavigation = computed(() =>
+  navigationItems.find((item) => item.path === route.path),
+)
+const pageTitle = computed(() => currentNavigation.value?.title ?? '后台管理')
+const pageDescription = computed(
+  () => currentNavigation.value?.description ?? '集中管理舞台资源与运动配置',
+)
 const username = computed(() => userStore.username || '管理员')
+const userInitial = computed(() => username.value.trim().slice(0, 1).toUpperCase() || 'A')
 
 function handleMenuSelect(path: string) {
-  router.push(path)
+  if (path !== route.path) router.push(path)
 }
 
 function goFrontStage() {
@@ -30,47 +59,67 @@ function handleLogout() {
 
 <template>
   <el-container class="backstage-page">
-    <el-aside class="backstage-aside" width="232px">
+    <el-aside class="backstage-aside" width="272px">
       <div class="brand">
-        <img :src="logo" class="brand-mark" alt="logo" />
-        <div>
-          <h1>舞台运动管理</h1>
-          <p>后台管理</p>
+        <img :src="logo" class="brand-mark" alt="StageManager" />
+        <div class="brand-copy">
+          <h1>StageManager</h1>
+          <p>舞台运动管理后台</p>
         </div>
       </div>
 
+      <div class="nav-section-label">管理</div>
       <el-menu
         class="backstage-menu"
         :default-active="activeMenu"
-        background-color="#ffffff"
-        text-color="#1f2937"
-        active-text-color="#ffffff"
         @select="handleMenuSelect"
       >
-        <el-menu-item index="/backstage/settings/model-upload">
-          <img :src="modelUpload" class="menu-icon" />
-          <span>模型上传</span>
-        </el-menu-item>
-        <el-menu-item index="/backstage/settings/element-motion">
-          <img :src="stageMotion" class="menu-icon" />
-          <span>元素运动配置</span>
+        <el-menu-item
+          v-for="item in navigationItems"
+          :key="item.path"
+          :index="item.path"
+        >
+          <img :src="item.icon" class="menu-icon" alt="" />
+          <span class="menu-text">
+            <strong>{{ item.title }}</strong>
+            <small>{{ item.description }}</small>
+          </span>
         </el-menu-item>
       </el-menu>
+
+      <div class="aside-footer">
+        <div class="workspace-status">
+          <span class="status-dot"></span>
+          <div>
+            <strong>本地工作区</strong>
+            <span>配置变更待接入后端</span>
+          </div>
+        </div>
+      </div>
     </el-aside>
 
-    <el-container>
+    <el-container class="content-shell">
       <el-header class="backstage-header">
-        <div>
+        <div class="header-title">
           <p class="breadcrumb">后台 / 设置</p>
           <h2>{{ pageTitle }}</h2>
+          <span>{{ pageDescription }}</span>
         </div>
 
         <div class="header-actions">
+          <el-button class="command-button" @click="goFrontStage">
+            前台预览
+          </el-button>
+
           <el-dropdown trigger="click">
-            <el-button type="primary">
-              {{ username }}
-              <span class="dropdown-caret"></span>
-            </el-button>
+            <button class="profile-button" type="button">
+              <span class="avatar">{{ userInitial }}</span>
+              <span class="profile-copy">
+                <strong>{{ username }}</strong>
+                <small>管理员</small>
+              </span>
+              <span class="chevron" aria-hidden="true"></span>
+            </button>
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item @click="handleLogout">退出登录</el-dropdown-item>
@@ -81,7 +130,9 @@ function handleLogout() {
       </el-header>
 
       <el-main class="backstage-main">
-        <router-view />
+        <div class="content-frame">
+          <router-view />
+        </div>
       </el-main>
     </el-container>
   </el-container>
@@ -89,147 +140,422 @@ function handleLogout() {
 
 <style scoped>
 .backstage-page {
-  --el-color-primary: #2563eb;
+  --fluent-brand: #0f6cbd;
+  --fluent-brand-hover: #115ea3;
+  --fluent-brand-subtle: #ebf3fc;
+  --fluent-bg: #f5f5f5;
+  --fluent-surface: #ffffff;
+  --fluent-surface-subtle: #fafafa;
+  --fluent-border: #e0e0e0;
+  --fluent-border-strong: #d1d1d1;
+  --fluent-text: #242424;
+  --fluent-text-muted: #616161;
+  --fluent-text-subtle: #707070;
+  --fluent-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --el-color-primary: var(--fluent-brand);
   min-height: 100vh;
-  color: #1f2937;
-  background: #f4f7fb;
+  color: var(--fluent-text);
+  background: var(--fluent-bg);
+  font-family:
+    'Segoe UI',
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
 }
 
 .backstage-aside {
   display: flex;
   flex-direction: column;
-  background: #286afe;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  min-height: 100vh;
+  padding: 14px 12px;
+  background: var(--fluent-surface);
+  border-right: 1px solid var(--fluent-border);
 }
 
 .brand {
   display: flex;
   gap: 12px;
   align-items: center;
-  height: 72px;
-  padding: 0 20px;
-  color: #ffffff;
+  min-height: 56px;
+  padding: 6px 8px 18px;
 }
 
 .brand-mark {
-  display: grid;
   width: 40px;
   height: 40px;
-  place-items: center;
-  font-size: 13px;
-  font-weight: 700;
-  color: #101828;
-  background: #ffffff;
+  object-fit: cover;
+  border: 1px solid var(--fluent-border);
   border-radius: 8px;
+}
+
+.brand-copy {
+  min-width: 0;
 }
 
 .brand h1 {
   margin: 0;
-  font-size: 17px;
-  font-weight: 700;
-  line-height: 1.2;
+  overflow: hidden;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+  color: var(--fluent-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .brand p {
-  margin: 3px 0 0;
+  margin: 1px 0 0;
+  overflow: hidden;
   font-size: 12px;
-  color: #94a3b8;
+  line-height: 16px;
+  color: var(--fluent-text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav-section-label {
+  padding: 0 12px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  color: var(--fluent-text-subtle);
 }
 
 .backstage-menu {
   flex: 1;
+  background: transparent;
   border-right: 0;
 }
 
 .backstage-menu :deep(.el-menu-item) {
-  height: 48px;
-  margin: 4px 12px;
-  border-radius: 8px;
+  position: relative;
+  height: 56px;
+  gap: 12px;
+  align-items: center;
+  padding: 0 12px !important;
+  margin: 2px 0;
+  color: var(--fluent-text);
+  border-radius: 6px;
 }
 
-.backstage-menu :deep(.el-menu-item.is-active) {
-  background: #2563eb;
+.backstage-menu :deep(.el-menu-item::before) {
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: 2px;
+  width: 3px;
+  content: '';
+  background: transparent;
+  border-radius: 2px;
 }
 
 .backstage-menu :deep(.el-menu-item:hover) {
-  color: #2563eb;
+  background: var(--fluent-surface-subtle);
 }
 
-.backstage-menu :deep(.el-menu-item.is-active:hover) {
-  color: #ffffff;
+.backstage-menu :deep(.el-menu-item.is-active) {
+  color: var(--fluent-text);
+  background: var(--fluent-brand-subtle);
+}
+
+.backstage-menu :deep(.el-menu-item.is-active::before) {
+  background: var(--fluent-brand);
 }
 
 .menu-icon {
-  display: inline-grid;
-  width: 22px;
-  height: 22px;
-  margin-right: 10px;
-  place-items: center;
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+}
+
+.menu-text {
+  display: grid;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.menu-text strong {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fluent-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menu-text small {
+  overflow: hidden;
+  margin-top: 3px;
   font-size: 12px;
-  font-weight: 700;
-  color: #101828;
-  background: transparent;
-  border-radius: 6px;
+  color: var(--fluent-text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.aside-footer {
+  padding-top: 12px;
+  border-top: 1px solid var(--fluent-border);
+}
+
+.workspace-status {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px;
+  background: var(--fluent-surface-subtle);
+  border: 1px solid var(--fluent-border);
+  border-radius: 8px;
+}
+
+.status-dot {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  margin-top: 6px;
+  background: #13a10e;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(19, 161, 14, 0.12);
+}
+
+.workspace-status strong,
+.workspace-status span {
+  display: block;
+  line-height: 18px;
+}
+
+.workspace-status strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.workspace-status span {
+  font-size: 12px;
+  color: var(--fluent-text-muted);
+}
+
+.content-shell {
+  min-width: 0;
 }
 
 .backstage-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 72px;
+  height: 80px;
   padding: 0 28px;
-  background: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
+  background: var(--fluent-surface);
+  border-bottom: 1px solid var(--fluent-border);
+}
+
+.header-title {
+  min-width: 0;
 }
 
 .breadcrumb {
-  margin: 0 0 2px;
+  margin: 0;
   font-size: 12px;
-  color: #64748b;
+  line-height: 16px;
+  color: var(--fluent-text-muted);
 }
 
 .backstage-header h2 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 700;
-  color: #111827;
+  margin: 2px 0 0;
+  overflow: hidden;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 28px;
+  color: var(--fluent-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.header-title span {
+  display: block;
+  margin-top: 1px;
+  overflow: hidden;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--fluent-text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .header-actions {
   display: flex;
+  flex: 0 0 auto;
   gap: 10px;
   align-items: center;
+  margin-left: 24px;
 }
 
-.dropdown-caret {
-  margin-left: 6px;
-  font-size: 12px;
+.command-button {
+  height: 34px;
+  padding: 0 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fluent-text);
+  background: var(--fluent-surface);
+  border-color: var(--fluent-border-strong);
+  border-radius: 6px;
+}
+
+.command-button:hover {
+  color: var(--fluent-text);
+  background: var(--fluent-surface-subtle);
+  border-color: var(--fluent-border-strong);
+}
+
+.profile-button {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-width: 156px;
+  height: 40px;
+  padding: 4px 10px 4px 5px;
+  font: inherit;
+  color: var(--fluent-text);
+  cursor: pointer;
+  background: var(--fluent-surface);
+  border: 1px solid var(--fluent-border);
+  border-radius: 8px;
+}
+
+.profile-button:hover {
+  background: var(--fluent-surface-subtle);
+}
+
+.avatar {
+  display: grid;
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  background: var(--fluent-brand);
+  border-radius: 50%;
+}
+
+.profile-copy {
+  display: grid;
+  min-width: 0;
+  text-align: left;
+}
+
+.profile-copy strong,
+.profile-copy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-copy strong {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 17px;
+}
+
+.profile-copy small {
+  font-size: 11px;
+  line-height: 14px;
+  color: var(--fluent-text-muted);
+}
+
+.chevron {
+  width: 7px;
+  height: 7px;
+  margin-left: auto;
+  border-right: 1.5px solid var(--fluent-text-muted);
+  border-bottom: 1.5px solid var(--fluent-text-muted);
+  transform: translateY(-2px) rotate(45deg);
 }
 
 .backstage-main {
-  padding: 24px;
+  padding: 24px 28px;
   overflow: auto;
+  background: var(--fluent-bg);
 }
 
-@media (max-width: 860px) {
+.content-frame {
+  width: 100%;
+  max-width: 1180px;
+}
+
+.content-frame :deep(.el-card) {
+  border-color: var(--fluent-border);
+  border-radius: 8px;
+  box-shadow: var(--fluent-shadow);
+}
+
+.content-frame :deep(.el-card__header) {
+  padding: 18px 20px;
+  background: var(--fluent-surface);
+  border-bottom-color: var(--fluent-border);
+}
+
+.content-frame :deep(.el-card__body) {
+  padding: 20px;
+}
+
+@media (max-width: 900px) {
   .backstage-page {
-    flex-direction: column;
+    display: block;
   }
 
   .backstage-aside {
     width: 100% !important;
+    min-height: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--fluent-border);
+  }
+
+  .backstage-menu :deep(.el-menu-item) {
+    height: 52px;
+  }
+
+  .aside-footer {
+    display: none;
   }
 
   .backstage-header {
     height: auto;
-    gap: 14px;
+    gap: 16px;
     align-items: flex-start;
     padding: 18px;
     flex-direction: column;
   }
 
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+    margin-left: 0;
+  }
+
+  .profile-button {
+    min-width: 0;
+  }
+
   .backstage-main {
-    padding: 16px;
+    padding: 18px;
+  }
+}
+
+@media (max-width: 560px) {
+  .brand {
+    padding-bottom: 12px;
+  }
+
+  .header-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .command-button,
+  .profile-button {
+    width: 100%;
   }
 }
 </style>
