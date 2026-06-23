@@ -26,7 +26,7 @@ const navigationItems: NavigationItem[] = [
   },
   {
     path: '/backstage/settings/element-motion',
-    title: '元素运动配置',
+    title: '构件运动参数配置',
     description: '配置元素运动参数',
     icon: stageMotion,
   },

@@ -100,3 +100,5 @@ htmlcov/
 .tox/
 .nox/
 coverage.xml
+
+frontend-decryption.ts
