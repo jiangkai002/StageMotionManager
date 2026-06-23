@@ -1,0 +1,294 @@
+/** Generate by swagger-axios-codegen */
+// @ts-nocheck
+/* eslint-disable */
+
+/** Generate by swagger-axios-codegen */
+// @ts-nocheck
+/* eslint-disable */
+import axiosStatic from 'axios';
+import type { AxiosInstance, AxiosRequestConfig } from 'axios';
+
+export interface IRequestOptions extends AxiosRequestConfig {
+  /**
+   * show loading status
+   */
+  loading?: boolean;
+  /**
+   * display error message
+   */
+  showError?: boolean;
+  /**
+   * indicates whether Authorization credentials are required for the request
+   * @default true
+   */
+  withAuthorization?: boolean;
+}
+
+export interface IRequestPromise<T = any> extends Promise<IRequestResponse<T>> {}
+
+export interface IRequestResponse<T = any> {
+  data: T;
+  status: number;
+  statusText: string;
+  headers: any;
+  config: any;
+  request?: any;
+}
+
+export interface IRequestInstance {
+  (config: any): IRequestPromise;
+  (url: string, config?: any): IRequestPromise;
+  request<T = any>(config: any): IRequestPromise<T>;
+}
+
+export interface IRequestConfig {
+  method?: any;
+  headers?: any;
+  url?: any;
+  data?: any;
+  params?: any;
+}
+
+// Add options interface
+export interface ServiceOptions {
+  axios?: IRequestInstance;
+  /** only in axios interceptor config*/
+  loading: boolean;
+  showError: boolean;
+}
+
+// Add default options
+export const serviceOptions: ServiceOptions = {};
+
+// Instance selector
+export function axios(configs: IRequestConfig, resolve: (p: any) => void, reject: (p: any) => void): Promise<any> {
+  if (serviceOptions.axios) {
+    return serviceOptions.axios
+      .request(configs)
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  } else {
+    throw new Error('please inject yourself instance like axios  ');
+  }
+}
+
+export function getConfigs(method: string, contentType: string, url: string, options: any): IRequestConfig {
+  const configs: IRequestConfig = {
+    loading: serviceOptions.loading,
+    showError: serviceOptions.showError,
+    ...options,
+    method,
+    url
+  };
+  configs.headers = {
+    ...options.headers,
+    'Content-Type': contentType
+  };
+  return configs;
+}
+
+export const basePath = '';
+
+export interface IList<T> extends Array<T> {}
+export interface List<T> extends Array<T> {}
+export interface IDictionary<TValue> {
+  [key: string]: TValue;
+}
+export interface Dictionary<TValue> extends IDictionary<TValue> {}
+
+export interface IListResult<T> {
+  items?: T[];
+}
+
+export class ListResultDto<T> implements IListResult<T> {
+  items?: T[];
+}
+
+export interface IPagedResult<T> extends IListResult<T> {
+  totalCount?: number;
+  items?: T[];
+}
+
+export class PagedResultDto<T = any> implements IPagedResult<T> {
+  totalCount?: number;
+  items?: T[];
+}
+
+// customer definition
+// empty
+
+export class ElementsService {
+  /**
+   * 创建构件
+   */
+  static createElementElementsPost(
+    params: {
+      /** requestBody */
+      body?: StageElement;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/elements';
+
+      const configs: IRequestConfig = getConfigs('post', 'application/json', url, options);
+
+      let data = params.body;
+
+      configs.data = data;
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 查询所有构件
+   */
+  static getElementsElementsGet(
+    params: {
+      /**  */
+      skip?: number;
+      /**  */
+      limit?: number;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/elements';
+
+      const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
+      configs.params = { skip: params['skip'], limit: params['limit'] };
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 根据 elementId 查询构件
+   */
+  static getElementElementsElementIdGet(
+    params: {
+      /**  */
+      elementId: number;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/elements/{element_id}';
+      url = url.replace('{element_id}', params['elementId'] + '');
+
+      const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 更新构件
+   */
+  static updateElementElementsElementIdPut(
+    params: {
+      /**  */
+      elementId: number;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/elements/{element_id}';
+      url = url.replace('{element_id}', params['elementId'] + '');
+
+      const configs: IRequestConfig = getConfigs('put', 'application/json', url, options);
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 删除构件
+   */
+  static deleteElementElementsElementIdDelete(
+    params: {
+      /**  */
+      elementId: number;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/elements/{element_id}';
+      url = url.replace('{element_id}', params['elementId'] + '');
+
+      const configs: IRequestConfig = getConfigs('delete', 'application/json', url, options);
+
+      axios(configs, resolve, reject);
+    });
+  }
+}
+
+/** HTTPValidationError */
+export interface HTTPValidationError {
+  /**  */
+  detail?: ValidationError[];
+}
+
+/** MotionRange */
+export interface MotionRange {
+  /** 运动类型 */
+  motion_type: MotionType;
+
+  /** 最小范围 */
+  min: number;
+
+  /** 最大范围 */
+  max: number;
+
+  /** 单位，平移默认mm，旋转默认度 */
+  unit?: string;
+}
+
+/** StageElement */
+export interface StageElement {
+  /** 构件名称 */
+  name: string;
+
+  /** 构件Id */
+  elementId: number;
+
+  /**  */
+  guid?: string;
+
+  /** 尺寸 */
+  size?: string;
+
+  /** 速度 */
+  speed?: number;
+
+  /** 构件可运动方位及范围 */
+  motion_ranges?: MotionRange[];
+}
+
+/** ValidationError */
+export interface ValidationError {
+  /**  */
+  loc: any | null[];
+
+  /**  */
+  msg: string;
+
+  /**  */
+  type: string;
+
+  /**  */
+  input?: any | null;
+
+  /**  */
+  ctx?: object;
+}
+
+export enum MotionType {
+  'translation_x' = 'translation_x',
+  'translation_y' = 'translation_y',
+  'translation_z' = 'translation_z',
+  'rotation_x' = 'rotation_x',
+  'rotation_y' = 'rotation_y',
+  'rotation_z' = 'rotation_z'
+}
