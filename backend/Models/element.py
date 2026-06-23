@@ -25,6 +25,7 @@ class StageElement(BaseModel):
     guid: str = Field(default="uniqueId", description="")
     size: str = Field(default="", description="尺寸")
     speed: float = Field(default=0, description="速度")
+    model_file_id: str = Field(..., description="关联的模型文件ID")
     motion_ranges: list[MotionRange] = Field(
         default_factory=list,
         description="构件可运动方位及范围"

@@ -2,6 +2,7 @@
 
 from .database import get_database, get_collection, close_database
 from .element import MotionType, MotionRange, StageElement, StageElementCollection
+from .modelFile import ModelFile, ModelFileType, ModelFileCollection
 from .scene import Scene, SceneDeviceItem, SceneCollection
 from .motion_task import MotionTask, TaskStatus, MotionTaskCollection
 
@@ -15,6 +16,10 @@ __all__ = [
     "MotionRange",
     "StageElement",
     "StageElementCollection",
+    # 模型文件
+    "ModelFile",
+    "ModelFileType",
+    "ModelFileCollection",
     # 场景
     "Scene",
     "SceneDeviceItem",

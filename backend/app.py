@@ -2,6 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 
 from Routes.element_routes import router as element_router
+from Routes.model_file_routes import router as model_file_router
 
 app = FastAPI(
     title="StageMotionManager API",
@@ -11,6 +12,7 @@ app = FastAPI(
 
 # 注册路由
 app.include_router(element_router)
+app.include_router(model_file_router)
 
 
 @app.get("/")

@@ -107,10 +107,6 @@ function handleLogout() {
         </div>
 
         <div class="header-actions">
-          <el-button class="command-button" @click="goFrontStage">
-            前台预览
-          </el-button>
-
           <el-dropdown trigger="click">
             <button class="profile-button" type="button">
               <span class="avatar">{{ userInitial }}</span>
@@ -481,7 +477,7 @@ function handleLogout() {
 
 .content-frame {
   width: 100%;
-  max-width: 1180px;
+  height: 100%;
 }
 
 .content-frame :deep(.el-card) {
