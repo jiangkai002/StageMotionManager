@@ -66,11 +66,10 @@ function handleLogout() {
         </div>
 
         <div class="header-actions">
-          <el-button @click="goFrontStage">返回舞台</el-button>
           <el-dropdown trigger="click">
             <el-button type="primary">
               {{ username }}
-              <span class="dropdown-caret">⌄</span>
+              <span class="dropdown-caret"></span>
             </el-button>
             <template #dropdown>
               <el-dropdown-menu>
@@ -90,6 +89,7 @@ function handleLogout() {
 
 <style scoped>
 .backstage-page {
+  --el-color-primary: #2563eb;
   min-height: 100vh;
   color: #1f2937;
   background: #f4f7fb;
