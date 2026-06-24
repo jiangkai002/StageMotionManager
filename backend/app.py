@@ -8,6 +8,7 @@ from starlette.responses import JSONResponse
 
 from Routes.element_routes import router as element_router
 from Routes.model_file_routes import router as model_file_router
+from Routes.element_basic_info_routes import router as element_basic_info_router
 
 
 class MongoJSONResponse(JSONResponse):
@@ -39,6 +40,7 @@ app = FastAPI(
 # 注册路由（统一 /api 前缀）
 app.include_router(element_router, prefix="/api")
 app.include_router(model_file_router, prefix="/api")
+app.include_router(element_basic_info_router, prefix="/api")
 
 
 @app.get("/")

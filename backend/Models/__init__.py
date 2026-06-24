@@ -5,6 +5,12 @@ from .element import MotionType, MotionRange, StageElement, StageElementCollecti
 from .modelFile import ModelFile, ModelFileType, ModelFileCollection
 from .scene import Scene, SceneDeviceItem, SceneCollection
 from .motion_task import MotionTask, TaskStatus, MotionTaskCollection
+from .ElementInfo import (
+    ElementType,
+    RelatedDocument,
+    ElementBasicInfo,
+    ElementBasicInfoCollection,
+)
 
 __all__ = [
     # 数据库
@@ -28,4 +34,9 @@ __all__ = [
     "MotionTask",
     "TaskStatus",
     "MotionTaskCollection",
+    # 构件基础信息
+    "ElementType",
+    "RelatedDocument",
+    "ElementBasicInfo",
+    "ElementBasicInfoCollection",
 ]
