@@ -40,7 +40,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'settings/element-motion',
         name: 'backstage-element-motion',
-        component: () => import('../backstage/settings/ElementMotionSetup.vue'),
+        component: () => import('../backstage/settings/ElementMotionParaSetup.vue'),
         meta: { requiresAuth: true, title: '元素运动配置' },
       },
     ],

@@ -38,8 +38,19 @@ export interface SceneContext {
   executeControl: (cmd: StageControlCommand) => void
   /** 执行单个运动轨道 */
   executeTrack: (track: StageMotionTrack) => void
+  getElements: () => SceneElementInfo[]
+  focusElement: (elementId: string) => boolean
+  setSelectionEnabled: (enabled: boolean) => void
   /** 销毁引擎、停止渲染循环、移除事件监听 */
   dispose: () => void
+}
+
+export interface SceneElementInfo {
+  elementId: string
+  name: string
+  meshName: string
+  guid?: string
+  uniqueId?: string
 }
 
 export interface SceneCreateOptions {
@@ -47,6 +58,7 @@ export interface SceneCreateOptions {
   maxDevicePixelRatio?: number
   renderFps?: number
   debugLogs?: boolean
+  selectionEnabled?: boolean
 }
 
 /**
@@ -181,6 +193,40 @@ function focusCameraOnMeshes(camera: ArcRotateCamera, meshes: AbstractMesh[]): v
   camera.maxZ = Math.max(radius * 10, 1000)
 }
 
+function getSceneElements(scene: Scene): SceneElementInfo[] {
+  const elementMap = new Map<string, SceneElementInfo>()
+
+  for (const mesh of scene.meshes) {
+    if (!mesh.name || mesh.name.startsWith('__') || mesh.name === 'selection-box') continue
+    if (mesh.getTotalVertices() <= 0) continue
+
+    const revitIds = extractRevitIds(mesh)
+    if (!revitIds.elementId) continue
+
+    if (!elementMap.has(revitIds.elementId)) {
+      elementMap.set(revitIds.elementId, {
+        elementId: revitIds.elementId,
+        name: revitIds.sourceName || mesh.name,
+        meshName: mesh.name,
+        guid: revitIds.guid,
+        uniqueId: revitIds.uniqueId,
+      })
+    }
+  }
+
+  return Array.from(elementMap.values()).sort((a, b) =>
+    String(a.elementId).localeCompare(String(b.elementId), undefined, { numeric: true }),
+  )
+}
+
+function findMeshesByElementId(scene: Scene, elementId: string): AbstractMesh[] {
+  return scene.meshes.filter((mesh) => {
+    if (mesh.name === elementId) return true
+    if (mesh.metadata?.elementId === elementId) return true
+    return extractElementId(mesh) === elementId
+  })
+}
+
 /**
  * 创建 Babylon.js 场景
  * @param canvas 渲染目标 canvas 元素
@@ -194,6 +240,7 @@ const createScene = (
 ): SceneContext => {
   const performanceMode = options.performanceMode ?? false
   const debugLogs = options.debugLogs ?? false
+  let selectionEnabled = options.selectionEnabled ?? true
   const maxDevicePixelRatio = options.maxDevicePixelRatio ?? (performanceMode ? 1 : 1.5)
   const renderFps = options.renderFps ?? (performanceMode ? 24 : 60)
 
@@ -270,6 +317,7 @@ const createScene = (
       remainingLoads -= 1
       if (remainingLoads === 0) {
         focusCameraOnMeshes(camera, loadedMeshes)
+        bus.emit(DirectorEvent.SceneReady, undefined)
       }
     }
 
@@ -337,6 +385,7 @@ const createScene = (
     } else if (pi.type === PointerEventTypes.POINTERUP) {
       // 拖拽结束不触发拾取
       if (isDragging) return
+      if (!selectionEnabled) return
       const pickInfo = scene.pick(scene.pointerX, scene.pointerY)
       if (debugLogs) console.log(pickInfo)
       if (pickInfo?.hit && pickInfo.pickedMesh) {
@@ -432,6 +481,39 @@ const createScene = (
     motionController.executeTrack(track)
   }
 
+  const getElements = () => getSceneElements(scene)
+
+  const focusElement = (elementId: string) => {
+    const meshes = findMeshesByElementId(scene, elementId).filter((mesh) => mesh.getTotalVertices() > 0)
+    if (meshes.length === 0) return false
+
+    selectionBox.setEnabled(false)
+    if (selectedHighlightMesh) {
+      highlightLayer.removeMesh(selectedHighlightMesh)
+      selectedHighlightMesh = null
+    }
+
+    const mesh = meshes[0]!
+    selectedMesh = mesh
+    if (mesh instanceof Mesh && !isSharedOrInstancedMesh(mesh, scene)) {
+      highlightLayer.addMesh(mesh, Color3.Yellow())
+      selectedHighlightMesh = mesh
+    } else {
+      updateSelectionBox(selectionBox, mesh)
+    }
+
+    focusCameraOnMeshes(camera, meshes)
+    return true
+  }
+
+  const setSelectionEnabled = (enabled: boolean) => {
+    selectionEnabled = enabled
+  }
+
+  if (urls.length === 0) {
+    window.setTimeout(() => bus.emit(DirectorEvent.SceneReady, undefined), 0)
+  }
+
   return {
     engine,
     scene,
@@ -440,6 +522,9 @@ const createScene = (
     executeBatch,
     executeControl,
     executeTrack,
+    getElements,
+    focusElement,
+    setSelectionEnabled,
     dispose,
   }
 }

@@ -149,7 +149,9 @@ function handleLogout() {
   --fluent-text-subtle: #707070;
   --fluent-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   --el-color-primary: var(--fluent-brand);
-  min-height: 100vh;
+  height: 100vh;
+  min-height: 0;
+  overflow: hidden;
   color: var(--fluent-text);
   background: var(--fluent-bg);
   font-family:
@@ -333,6 +335,7 @@ function handleLogout() {
 
 .content-shell {
   min-width: 0;
+  min-height: 0;
 }
 
 .backstage-header {
@@ -470,6 +473,7 @@ function handleLogout() {
 }
 
 .backstage-main {
+  min-height: 0;
   padding: 24px 28px;
   overflow: auto;
   background: var(--fluent-bg);
@@ -478,6 +482,7 @@ function handleLogout() {
 .content-frame {
   width: 100%;
   height: 100%;
+  min-height: 0;
 }
 
 .content-frame :deep(.el-card) {

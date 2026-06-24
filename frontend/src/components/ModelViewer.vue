@@ -12,11 +12,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { createScene } from '../scenes/ModelScene'
 import { director } from '@/scenes/SceneDirector'
 import { DirectorEvent } from '@/scenes/director-types'
 import { useSceneStore } from '@/stores/scene'
+import type { SceneContext } from '../scenes/ModelScene'
 import type {
   StageCommandBatch,
   StageControlCommand,
@@ -28,23 +29,25 @@ const sceneStore = useSceneStore()
 const bjsCanvas = ref<HTMLCanvasElement | null>(null)
 const fps = ref(0)
 let fpsTimer: ReturnType<typeof setInterval> | null = null
-/** director 事件取消监听函数列表 */
 let unsubs: (() => void)[] = []
+let sceneContext: SceneContext | null = null
 
-// ─── 对外暴露 ──────────────────────────────
 const emit = defineEmits<{
   (e: 'fps', value: number): void
   (e: 'trackComplete', elementId: string): void
   (e: 'sequenceComplete'): void
   (e: 'meshSelected', elementId: string, meshName: string): void
+  (e: 'sceneReady'): void
 }>()
 
-// 暴露给父组件通过 ref 调用（内部走 director → bus → Babylon）
 defineExpose({
   getFps: () => director.getFps(),
   executeBatch: (batch: StageCommandBatch) => director.executeBatch(batch),
   executeControl: (cmd: StageControlCommand) => director.executeControl(cmd),
   executeTrack: (track: StageMotionTrack) => director.executeTrack(track),
+  getElements: () => sceneContext?.getElements() ?? [],
+  focusElement: (elementId: string) => sceneContext?.focusElement(elementId) ?? false,
+  setSelectionEnabled: (enabled: boolean) => sceneContext?.setSelectionEnabled(enabled),
 })
 
 const props = withDefaults(
@@ -57,6 +60,7 @@ const props = withDefaults(
     debugLogs?: boolean
     showControls?: boolean
     showFps?: boolean
+    selectionEnabled?: boolean
   }>(),
   {
     modelUrl: '',
@@ -67,62 +71,72 @@ const props = withDefaults(
     debugLogs: false,
     showControls: true,
     showFps: true,
+    selectionEnabled: true,
+  },
+)
+
+watch(
+  () => props.selectionEnabled,
+  (enabled) => {
+    sceneContext?.setSelectionEnabled(enabled)
   },
 )
 
 onMounted(() => {
-  if (bjsCanvas.value) {
-    // 创建场景，SceneMotionController 在内部自动订阅 bus
-    const ctx = createScene(
-      bjsCanvas.value,
-      props.modelUrls.length > 0 ? props.modelUrls : props.modelUrl,
-      {
-        performanceMode: props.performanceMode,
-        maxDevicePixelRatio: props.maxDevicePixelRatio,
-        renderFps: props.renderFps,
-        debugLogs: props.debugLogs,
-      },
-    )
-    sceneStore.setContext(ctx)
+  if (!bjsCanvas.value) return
 
-    // 通知场景就绪
+  const ctx = createScene(
+    bjsCanvas.value,
+    props.modelUrls.length > 0 ? props.modelUrls : props.modelUrl,
+    {
+      performanceMode: props.performanceMode,
+      maxDevicePixelRatio: props.maxDevicePixelRatio,
+      renderFps: props.renderFps,
+      debugLogs: props.debugLogs,
+      selectionEnabled: props.selectionEnabled,
+    },
+  )
+
+  sceneContext = ctx
+  sceneStore.setContext(ctx)
+
+  unsubs.push(
     director.on(DirectorEvent.SceneReady, () => {
-      if (props.debugLogs) console.log('[ModelViewer] 场景就绪')
-    })
+      if (props.debugLogs) console.log('[ModelViewer] scene ready')
+      emit('sceneReady')
+    }),
+  )
 
-    // 监听 Babylon 端回传的事件
-    unsubs.push(
-      director.on(DirectorEvent.Fps, ({ value }) => {
-        fps.value = value
-        emit('fps', value)
-      }),
-    )
+  unsubs.push(
+    director.on(DirectorEvent.Fps, ({ value }) => {
+      fps.value = value
+      emit('fps', value)
+    }),
+  )
 
-    unsubs.push(
-      director.on(DirectorEvent.TrackComplete, ({ elementId }) => {
-        emit('trackComplete', elementId)
-      }),
-    )
+  unsubs.push(
+    director.on(DirectorEvent.TrackComplete, ({ elementId }) => {
+      emit('trackComplete', elementId)
+    }),
+  )
 
-    unsubs.push(
-      director.on(DirectorEvent.SequenceComplete, () => {
-        emit('sequenceComplete')
-      }),
-    )
+  unsubs.push(
+    director.on(DirectorEvent.SequenceComplete, () => {
+      emit('sequenceComplete')
+    }),
+  )
 
-    unsubs.push(
-      director.on(DirectorEvent.MeshSelected, ({ elementId, meshName }) => {
-        if (props.debugLogs) console.log('[ModelViewer] 选中构件', elementId, meshName)
-        emit('meshSelected', elementId, meshName)
-      }),
-    )
+  unsubs.push(
+    director.on(DirectorEvent.MeshSelected, ({ elementId, meshName }) => {
+      if (props.debugLogs) console.log('[ModelViewer] selected mesh', elementId, meshName)
+      emit('meshSelected', elementId, meshName)
+    }),
+  )
 
-    // FPS 定时上报：Vue → bus → Babylon 处理 → bus 回传 → Vue 更新
-    if (props.showFps) {
-      fpsTimer = setInterval(() => {
-        director.getFps()
-      }, 1000)
-    }
+  if (props.showFps) {
+    fpsTimer = setInterval(() => {
+      director.getFps()
+    }, 1000)
   }
 })
 
@@ -131,14 +145,16 @@ onBeforeUnmount(() => {
     clearInterval(fpsTimer)
     fpsTimer = null
   }
+
   for (const unsub of unsubs) {
     unsub()
   }
   unsubs = []
+
   sceneStore.dispose()
+  sceneContext = null
 })
 
-// ─── 移动方块 ──────────────────────────────
 function moveBox() {
   const x = Math.random() * 6 - 3
   const y = Math.random() * 3
@@ -146,7 +162,6 @@ function moveBox() {
   director.setPosition('box-red', x, y, z)
 }
 
-// ─── 测试批量动画 ──────────────────────────
 function testBatch() {
   const batch: StageCommandBatch = {
     tracks: [
@@ -176,10 +191,8 @@ function testBatch() {
   director.executeBatch(batch)
 }
 
-// ─── 测试序列动画 ──────────────────────────
 function testSequence() {}
 
-// ─── 停止全部 ──────────────────────────────
 function stopAll() {
   director.executeControl({ op: 'stopAll' })
 }
