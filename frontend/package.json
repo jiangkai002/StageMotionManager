@@ -16,6 +16,8 @@
     "@babylonjs/core": "^9.13.0",
     "@babylonjs/loaders": "^9.13.0",
     "@element-plus/icons-vue": "^2.3.2",
+    "@noble/ciphers": "^2.2.0",
+    "ali-oss": "^6.23.0",
     "axios": "^1.18.0",
     "element-plus": "^2.14.2",
     "mitt": "^3.0.1",
@@ -25,6 +27,7 @@
   },
   "devDependencies": {
     "@tsconfig/node24": "^24.0.4",
+    "@types/ali-oss": "^6.23.3",
     "@types/node": "^24.12.2",
     "@vitejs/plugin-vue": "^6.0.6",
     "@vue/tsconfig": "^0.9.1",

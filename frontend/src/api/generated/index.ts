@@ -224,10 +224,162 @@ export class ElementsService {
   }
 }
 
+export class ModelFilesService {
+  /**
+   * 上传模型文件记录
+   */
+  static createModelFileModelFilesPost(
+    params: {
+      /** requestBody */
+      body?: ModelFile;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/model-files';
+
+      const configs: IRequestConfig = getConfigs('post', 'application/json', url, options);
+
+      let data = params.body;
+
+      configs.data = data;
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 查询所有模型文件
+   */
+  static getModelFilesModelFilesGet(
+    params: {
+      /**  */
+      skip?: number;
+      /**  */
+      limit?: number;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/model-files';
+
+      const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
+      configs.params = { skip: params['skip'], limit: params['limit'] };
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 批量上传模型文件记录
+   */
+  static createModelFilesModelFilesBatchPost(
+    params: {
+      /** requestBody */
+      body?: ModelFile[];
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/model-files/batch';
+
+      const configs: IRequestConfig = getConfigs('post', 'application/json', url, options);
+
+      let data = params.body;
+
+      configs.data = data;
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 根据 ID 查询模型文件
+   */
+  static getModelFileModelFilesFileIdGet(
+    params: {
+      /**  */
+      fileId: string;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/model-files/{file_id}';
+      url = url.replace('{file_id}', params['fileId'] + '');
+
+      const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 更新模型文件
+   */
+  static updateModelFileModelFilesFileIdPut(
+    params: {
+      /**  */
+      fileId: string;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/model-files/{file_id}';
+      url = url.replace('{file_id}', params['fileId'] + '');
+
+      const configs: IRequestConfig = getConfigs('put', 'application/json', url, options);
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 删除模型文件
+   */
+  static deleteModelFileModelFilesFileIdDelete(
+    params: {
+      /**  */
+      fileId: string;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/model-files/{file_id}';
+      url = url.replace('{file_id}', params['fileId'] + '');
+
+      const configs: IRequestConfig = getConfigs('delete', 'application/json', url, options);
+
+      axios(configs, resolve, reject);
+    });
+  }
+}
+
 /** HTTPValidationError */
 export interface HTTPValidationError {
   /**  */
   detail?: ValidationError[];
+}
+
+/** 舞台模型文件 */
+export interface ModelFile {
+  /** 文件名称 */
+  name: string;
+
+  /** 文件类别 */
+  file_type: ModelFileType;
+
+  /** 属于哪个厅 */
+  room: string;
+
+  /** 文件存储路径 */
+  file_path: string;
+
+  /** 文件大小(字节) */
+  file_size?: any | null;
+
+  /** 文件描述 */
+  description?: any | null;
+
+  /** 创建时间 */
+  created_at?: Date;
+
+  /** 更新时间 */
+  updated_at?: Date;
 }
 
 /** MotionRange */
@@ -262,6 +414,9 @@ export interface StageElement {
   /** 速度 */
   speed?: number;
 
+  /** 关联的模型文件ID */
+  model_file_id: string;
+
   /** 构件可运动方位及范围 */
   motion_ranges?: MotionRange[];
 }
@@ -282,6 +437,15 @@ export interface ValidationError {
 
   /**  */
   ctx?: object;
+}
+
+export enum ModelFileType {
+  'revit' = 'revit',
+  'rhino' = 'rhino',
+  'sketchup' = 'sketchup',
+  'ifc' = 'ifc',
+  'gltf' = 'gltf',
+  'other' = 'other'
 }
 
 export enum MotionType {

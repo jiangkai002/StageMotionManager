@@ -17,10 +17,14 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       proxy: {
-        '/api': {
-          target: proxyTarget,
+        '/api/auth': {
+          target: 'https://cloud.ibuildingsh.com',
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, ''),
+          secure: true,
+        },
+        '/api': {
+          target: 'http://localhost:8000',
+          changeOrigin: true,
         },
       },
     },

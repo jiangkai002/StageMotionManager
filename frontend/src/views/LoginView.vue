@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '@/stores'
+import { apiClient } from '@/api'
 
 const router = useRouter()
 const route = useRoute()
@@ -25,14 +26,19 @@ async function handleLogin() {
     // TODO: 替换为真实接口调用（如 axios.post('/api/auth/login', ...)）
     // const res = await apiLogin(username.value, password.value)
 
-    // 模拟登录成功
-    await new Promise((r) => setTimeout(r, 500))
-    userStore.login('mock_token_' + Date.now(), {
-      userId: '1',
-      username: username.value,
-      roles: ['admin'],
+    const { data } = await apiClient.post('auth/token', {
+      identifer: username.value,
+      password: password.value,
+      persistent: true,
     })
 
+    // 校验返回的 token 是否有效
+    if (!data) {
+      errorMsg.value = '登录失败：服务器未返回有效凭证'
+      return
+    }
+
+    userStore.setToken(data)
     // 登录成功后跳转到来源页或首页
     const redirect = (route.query.redirect as string) || '/'
     router.replace(redirect)

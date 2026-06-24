@@ -12,11 +12,17 @@ export const apiClient: AxiosInstance = axios.create({
 })
 
 function attachAuthToken(config: InternalAxiosRequestConfig) {
-  const userStore = useUserStore()
-  const token = userStore.token
+  // 标记了 skipAuth 的请求不注入本地 token（如请求外部服务）
+  if (config.headers?.skipAuth) {
+    // 把标记存到 config 上，响应拦截器还能读到
+    ;(config as any).skipAuth = true
+  } else {
+    const userStore = useUserStore()
+    const token = userStore.token
 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
   }
 
   return config
@@ -27,18 +33,25 @@ function handleRequestError(error: unknown) {
 }
 
 function handleResponseError(error: any) {
-  const { response } = error
+  const { response, config } = error
+
+  // 标记了 skipAuth 的请求不触发 401 登出逻辑
+  const skipAuth = (config as any)?.skipAuth
 
   if (response) {
     switch (response.status) {
       case 401: {
-        ElMessage.error('登录已过期，请重新登录')
-        const userStore = useUserStore()
-        userStore.logout()
-        router.replace({
-          name: 'login',
-          query: { redirect: router.currentRoute.value.fullPath },
-        })
+        if (skipAuth) {
+          ElMessage.error(response.data?.message || '请求未授权')
+        } else {
+          ElMessage.error('登录已过期，请重新登录')
+          const userStore = useUserStore()
+          userStore.logout()
+          router.replace({
+            name: 'login',
+            query: { redirect: router.currentRoute.value.fullPath },
+          })
+        }
         break
       }
       case 403:
