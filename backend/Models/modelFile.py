@@ -22,7 +22,8 @@ class ModelFile(BaseModel):
     """舞台模型文件"""
 
     name: str = Field(..., description="文件名称", example="主舞台模型.rvt")
-    file_type: ModelFileType = Field(..., description="文件类别")
+    file_type: ModelFileType = Field(..., description="模型格式")
+    type: str = Field(..., description="模型类型")
     room: str = Field(..., description="属于哪个厅")
     file_path: str = Field(..., description="文件存储路径")
     file_size: Optional[int] = Field(None, description="文件大小(字节)")

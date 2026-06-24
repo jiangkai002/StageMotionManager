@@ -125,7 +125,7 @@ export class ElementsService {
   /**
    * 创建构件
    */
-  static createElementElementsPost(
+  static createElementApiElementsPost(
     params: {
       /** requestBody */
       body?: StageElement;
@@ -133,7 +133,7 @@ export class ElementsService {
     options: IRequestOptions = {}
   ): Promise<any | null> {
     return new Promise((resolve, reject) => {
-      let url = basePath + '/elements';
+      let url = basePath + '/api/elements';
 
       const configs: IRequestConfig = getConfigs('post', 'application/json', url, options);
 
@@ -147,7 +147,7 @@ export class ElementsService {
   /**
    * 查询所有构件
    */
-  static getElementsElementsGet(
+  static getElementsApiElementsGet(
     params: {
       /**  */
       skip?: number;
@@ -157,7 +157,7 @@ export class ElementsService {
     options: IRequestOptions = {}
   ): Promise<any | null> {
     return new Promise((resolve, reject) => {
-      let url = basePath + '/elements';
+      let url = basePath + '/api/elements';
 
       const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
       configs.params = { skip: params['skip'], limit: params['limit'] };
@@ -168,7 +168,7 @@ export class ElementsService {
   /**
    * 根据 elementId 查询构件
    */
-  static getElementElementsElementIdGet(
+  static getElementApiElementsElementIdGet(
     params: {
       /**  */
       elementId: number;
@@ -176,7 +176,7 @@ export class ElementsService {
     options: IRequestOptions = {}
   ): Promise<any | null> {
     return new Promise((resolve, reject) => {
-      let url = basePath + '/elements/{element_id}';
+      let url = basePath + '/api/elements/{element_id}';
       url = url.replace('{element_id}', params['elementId'] + '');
 
       const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
@@ -187,7 +187,7 @@ export class ElementsService {
   /**
    * 更新构件
    */
-  static updateElementElementsElementIdPut(
+  static updateElementApiElementsElementIdPut(
     params: {
       /**  */
       elementId: number;
@@ -195,7 +195,7 @@ export class ElementsService {
     options: IRequestOptions = {}
   ): Promise<any | null> {
     return new Promise((resolve, reject) => {
-      let url = basePath + '/elements/{element_id}';
+      let url = basePath + '/api/elements/{element_id}';
       url = url.replace('{element_id}', params['elementId'] + '');
 
       const configs: IRequestConfig = getConfigs('put', 'application/json', url, options);
@@ -206,7 +206,7 @@ export class ElementsService {
   /**
    * 删除构件
    */
-  static deleteElementElementsElementIdDelete(
+  static deleteElementApiElementsElementIdDelete(
     params: {
       /**  */
       elementId: number;
@@ -214,7 +214,7 @@ export class ElementsService {
     options: IRequestOptions = {}
   ): Promise<any | null> {
     return new Promise((resolve, reject) => {
-      let url = basePath + '/elements/{element_id}';
+      let url = basePath + '/api/elements/{element_id}';
       url = url.replace('{element_id}', params['elementId'] + '');
 
       const configs: IRequestConfig = getConfigs('delete', 'application/json', url, options);
@@ -228,7 +228,7 @@ export class ModelFilesService {
   /**
    * 上传模型文件记录
    */
-  static createModelFileModelFilesPost(
+  static createModelFileApiModelFilesPost(
     params: {
       /** requestBody */
       body?: ModelFile;
@@ -236,7 +236,7 @@ export class ModelFilesService {
     options: IRequestOptions = {}
   ): Promise<any | null> {
     return new Promise((resolve, reject) => {
-      let url = basePath + '/model-files';
+      let url = basePath + '/api/model-files';
 
       const configs: IRequestConfig = getConfigs('post', 'application/json', url, options);
 
@@ -250,7 +250,7 @@ export class ModelFilesService {
   /**
    * 查询所有模型文件
    */
-  static getModelFilesModelFilesGet(
+  static getModelFilesApiModelFilesGet(
     params: {
       /**  */
       skip?: number;
@@ -260,7 +260,7 @@ export class ModelFilesService {
     options: IRequestOptions = {}
   ): Promise<any | null> {
     return new Promise((resolve, reject) => {
-      let url = basePath + '/model-files';
+      let url = basePath + '/api/model-files';
 
       const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
       configs.params = { skip: params['skip'], limit: params['limit'] };
@@ -271,7 +271,7 @@ export class ModelFilesService {
   /**
    * 批量上传模型文件记录
    */
-  static createModelFilesModelFilesBatchPost(
+  static createModelFilesApiModelFilesBatchPost(
     params: {
       /** requestBody */
       body?: ModelFile[];
@@ -279,7 +279,7 @@ export class ModelFilesService {
     options: IRequestOptions = {}
   ): Promise<any | null> {
     return new Promise((resolve, reject) => {
-      let url = basePath + '/model-files/batch';
+      let url = basePath + '/api/model-files/batch';
 
       const configs: IRequestConfig = getConfigs('post', 'application/json', url, options);
 
@@ -293,7 +293,7 @@ export class ModelFilesService {
   /**
    * 根据 ID 查询模型文件
    */
-  static getModelFileModelFilesFileIdGet(
+  static getModelFileApiModelFilesFileIdGet(
     params: {
       /**  */
       fileId: string;
@@ -301,7 +301,7 @@ export class ModelFilesService {
     options: IRequestOptions = {}
   ): Promise<any | null> {
     return new Promise((resolve, reject) => {
-      let url = basePath + '/model-files/{file_id}';
+      let url = basePath + '/api/model-files/{file_id}';
       url = url.replace('{file_id}', params['fileId'] + '');
 
       const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
@@ -312,7 +312,7 @@ export class ModelFilesService {
   /**
    * 更新模型文件
    */
-  static updateModelFileModelFilesFileIdPut(
+  static updateModelFileApiModelFilesFileIdPut(
     params: {
       /**  */
       fileId: string;
@@ -320,7 +320,7 @@ export class ModelFilesService {
     options: IRequestOptions = {}
   ): Promise<any | null> {
     return new Promise((resolve, reject) => {
-      let url = basePath + '/model-files/{file_id}';
+      let url = basePath + '/api/model-files/{file_id}';
       url = url.replace('{file_id}', params['fileId'] + '');
 
       const configs: IRequestConfig = getConfigs('put', 'application/json', url, options);
@@ -331,7 +331,7 @@ export class ModelFilesService {
   /**
    * 删除模型文件
    */
-  static deleteModelFileModelFilesFileIdDelete(
+  static deleteModelFileApiModelFilesFileIdDelete(
     params: {
       /**  */
       fileId: string;
@@ -339,7 +339,7 @@ export class ModelFilesService {
     options: IRequestOptions = {}
   ): Promise<any | null> {
     return new Promise((resolve, reject) => {
-      let url = basePath + '/model-files/{file_id}';
+      let url = basePath + '/api/model-files/{file_id}';
       url = url.replace('{file_id}', params['fileId'] + '');
 
       const configs: IRequestConfig = getConfigs('delete', 'application/json', url, options);
@@ -360,8 +360,11 @@ export interface ModelFile {
   /** 文件名称 */
   name: string;
 
-  /** 文件类别 */
+  /** 模型格式 */
   file_type: ModelFileType;
+
+  /** 模型类型 */
+  type: string;
 
   /** 属于哪个厅 */
   room: string;

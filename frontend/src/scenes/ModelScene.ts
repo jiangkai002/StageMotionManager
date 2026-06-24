@@ -42,6 +42,13 @@ export interface SceneContext {
   dispose: () => void
 }
 
+export interface SceneCreateOptions {
+  performanceMode?: boolean
+  maxDevicePixelRatio?: number
+  renderFps?: number
+  debugLogs?: boolean
+}
+
 /**
  * 从 mesh 中提取 Revit ElementId / GUID
  * Revit 导出的 GLB 可能将标识信息存储在多个位置：
@@ -180,12 +187,24 @@ function focusCameraOnMeshes(camera: ArcRotateCamera, meshes: AbstractMesh[]): v
  * @param modelUrl GLB 模型 URL，为空则创建测试方块
  * @returns 场景上下文，包含 dispose 方法供组件卸载时调用
  */
-const createScene = (canvas: HTMLCanvasElement, modelUrls?: string | string[]): SceneContext => {
-  const engine = new Engine(canvas, true, {
-    preserveDrawingBuffer: true,
-    stencil: true,
+const createScene = (
+  canvas: HTMLCanvasElement,
+  modelUrls?: string | string[],
+  options: SceneCreateOptions = {},
+): SceneContext => {
+  const performanceMode = options.performanceMode ?? false
+  const debugLogs = options.debugLogs ?? false
+  const maxDevicePixelRatio = options.maxDevicePixelRatio ?? (performanceMode ? 1 : 1.5)
+  const renderFps = options.renderFps ?? (performanceMode ? 24 : 60)
+
+  const engine = new Engine(canvas, !performanceMode, {
+    preserveDrawingBuffer: false,
+    stencil: !performanceMode,
   })
+  engine.setHardwareScalingLevel(Math.max(1, window.devicePixelRatio / maxDevicePixelRatio))
   const scene = new Scene(engine)
+  scene.clearColor.set(0.94, 0.97, 1, 1)
+  scene.skipPointerMovePicking = true
 
   // ─── 相机 ─────────────────────────────────
   // ArcRotateCamera 支持：左键旋转、右键平移、滚轮缩放
@@ -213,11 +232,13 @@ const createScene = (canvas: HTMLCanvasElement, modelUrls?: string | string[]): 
       meshes: AbstractMesh[],
       animationGroups?: import('@babylonjs/core').AnimationGroup[],
     ) => {
-      console.log('[ModelScene] GLB ????', {
-        url,
-        meshes: meshes.map((mesh) => mesh.name),
-        animationGroups: animationGroups?.map((group) => group.name),
-      })
+      if (debugLogs) {
+        console.log('[ModelScene] GLB loaded', {
+          url,
+          meshCount: meshes.length,
+          animationGroups: animationGroups?.map((group) => group.name),
+        })
+      }
 
       for (const mesh of meshes) {
         const revitIds = extractRevitIds(mesh)
@@ -233,15 +254,17 @@ const createScene = (canvas: HTMLCanvasElement, modelUrls?: string | string[]): 
       }
 
       const revitMeshes = meshes.filter((mesh) => mesh.metadata?.uniqueId || mesh.metadata?.guid)
-      console.log('[ModelScene] Revit metadata extracted', {
-        url,
-        count: revitMeshes.length,
-        samples: revitMeshes.slice(0, 5).map((mesh) => ({
-          name: mesh.name,
-          parent: mesh.parent?.name,
-          metadata: mesh.metadata,
-        })),
-      })
+      if (debugLogs) {
+        console.log('[ModelScene] Revit metadata extracted', {
+          url,
+          count: revitMeshes.length,
+          samples: revitMeshes.slice(0, 5).map((mesh) => ({
+            name: mesh.name,
+            parent: mesh.parent?.name,
+            metadata: mesh.metadata,
+          })),
+        })
+      }
 
       loadedMeshes.push(...meshes)
       remainingLoads -= 1
@@ -315,7 +338,7 @@ const createScene = (canvas: HTMLCanvasElement, modelUrls?: string | string[]): 
       // 拖拽结束不触发拾取
       if (isDragging) return
       const pickInfo = scene.pick(scene.pointerX, scene.pointerY)
-      console.log(pickInfo)
+      if (debugLogs) console.log(pickInfo)
       if (pickInfo?.hit && pickInfo.pickedMesh) {
         const mesh = pickInfo.pickedMesh
         selectionBox.setEnabled(false)
@@ -342,28 +365,39 @@ const createScene = (canvas: HTMLCanvasElement, modelUrls?: string | string[]): 
           revitMetadataSource: revitIds.sourceName,
         }
 
-        console.log('selected mesh metadata', selectedMesh.metadata)
+        if (debugLogs) console.log('selected mesh metadata', selectedMesh.metadata)
 
         const elementId = revitIds.elementId
-        console.log('[ModelScene] 选中构件:', {
-          name: mesh.name,
-          id: mesh.id,
-          metadata: mesh.metadata,
-          material: mesh.material?.name,
-          position: mesh.position,
-        })
+        if (debugLogs) {
+          console.log('[ModelScene] 选中构件:', {
+            name: mesh.name,
+            id: mesh.id,
+            metadata: mesh.metadata,
+            material: mesh.material?.name,
+            position: mesh.position,
+          })
+        }
         bus.emit(DirectorEvent.MeshSelected, { elementId, meshName: mesh.name })
       }
     }
   })
 
   // ─── 渲染循环 ─────────────────────────────
+  const minFrameGap = renderFps > 0 ? 1000 / renderFps : 0
+  let lastRenderAt = 0
   engine.runRenderLoop(() => {
+    const now = performance.now()
+    if (minFrameGap > 0 && now - lastRenderAt < minFrameGap) return
+
+    lastRenderAt = now
     scene.render()
   })
 
   // ─── 窗口 resize 自适应 ────────────────────
-  const handleResize = () => engine.resize()
+  const handleResize = () => {
+    engine.setHardwareScalingLevel(Math.max(1, window.devicePixelRatio / maxDevicePixelRatio))
+    engine.resize()
+  }
   window.addEventListener('resize', handleResize)
 
   // ─── 销毁方法 ─────────────────────────────

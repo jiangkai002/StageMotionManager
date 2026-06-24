@@ -4,7 +4,8 @@ import { ElMessage } from 'element-plus'
 import { Delete, UploadFilled, View, Edit } from '@element-plus/icons-vue'
 import OSS from 'ali-oss'
 import { OssInfoDecryptor } from '@/utils/frontend-decryption'
-import { apiClient, ModelFilesService, ModelFileType } from '@/api'
+import { apiClient, ModelFileType } from '@/api'
+import ModelViewer from '@/components/ModelViewer.vue'
 
 /** 单个上传任务状态 */
 interface UploadTask {
@@ -24,21 +25,51 @@ interface UploadTask {
 interface UploadedModel {
   id: string
   name: string
+  type: string
   room: string
   ossUrl: string
   fileSize: number
+  description?: string
 }
+
+const roomOptions = ['大厅', '中厅', '小厅']
+const defaultRoom = '大厅'
+const modelTypeOptions = [
+  '台下设备-台塔',
+  '台下设备-舞台前部',
+  '台下设备-辅助舞台',
+  '台上设备-台塔',
+  '台上设备-舞台前部',
+  '台上设备-支持舞台',
+  '控制系统',
+  '额外设备',
+  '合成排练厅设备',
+  '建筑基础设施',
+  '台下设备',
+  '台上设备',
+]
+const defaultModelType = '台下设备-台塔'
 
 const ossClient = ref<OSS | null>(null)
 const uploadTasks = ref<UploadTask[]>([])
 const uploadedModels = ref<UploadedModel[]>([])
 const isUploading = ref(false)
 const uploadDialogVisible = ref(false)
+const editDialogVisible = ref(false)
+const isSavingModelSettings = ref(false)
 const fileInput = ref<HTMLInputElement>()
 const form = reactive({
   room: '',
   description: '',
 })
+const editForm = reactive({
+  room: '',
+  type: '',
+})
+const editingModel = ref<UploadedModel | null>(null)
+
+/** 当前选中预览的模型 */
+const selectedModel = ref<UploadedModel | null>(null)
 
 onMounted(async () => {
   await Promise.all([initOssClient(), loadUploadedModels()])
@@ -69,14 +100,16 @@ async function initOssClient() {
 /** 从后端加载已上传模型列表 */
 async function loadUploadedModels() {
   try {
-    const data = await ModelFilesService.getModelFilesModelFilesGet({ skip: 0, limit: 100 })
+    const { data } = await apiClient.get('/model-files', { params: { skip: 0, limit: 100 } })
     const list = Array.isArray(data) ? data : (data?.items ?? [])
     uploadedModels.value = list.map((item: any) => ({
       id: item.id ?? item._id ?? '',
       name: item.name,
-      room: item.room ?? 'default',
+      type: item.type ?? defaultModelType,
+      room: item.room ?? defaultRoom,
       ossUrl: item.file_path ?? '',
       fileSize: item.file_size ?? 0,
+      description: item.description ?? '',
     }))
   } catch (error) {
     console.error('加载已上传模型列表失败:', error)
@@ -163,23 +196,26 @@ async function confirmUpload() {
   const modelFiles = successTasks.map((task) => ({
     name: task.name,
     file_type: ModelFileType.gltf,
-    room: task.room || 'default',
+    type: defaultModelType,
+    room: task.room || defaultRoom,
     file_path: task.ossUrl || '',
     file_size: task.file.size,
     description: task.description || undefined,
   }))
 
   try {
-    await ModelFilesService.createModelFilesModelFilesBatchPost({ body: modelFiles })
+    await apiClient.post('/model-files/batch', modelFiles)
 
     // 添加到已上传列表
     for (const task of successTasks) {
       uploadedModels.value.push({
         id: task.id,
         name: task.name,
-        room: task.room || 'default',
+        type: defaultModelType,
+        room: task.room || defaultRoom,
         ossUrl: task.ossUrl!,
         fileSize: task.file.size,
+        description: task.description || '',
       })
     }
 
@@ -235,7 +271,7 @@ function removeTask(id: string) {
 
 /** 查看模型 */
 function handleView(model: UploadedModel) {
-  ElMessage.info(`查看模型：${model.name}`)
+  selectedModel.value = model
 }
 
 /** 编辑模型 */
@@ -244,6 +280,59 @@ function handleEdit(model: UploadedModel) {
 }
 
 /** 格式化文件大小 */
+function openEditDialog(model: UploadedModel) {
+  editingModel.value = model
+  editForm.room = model.room || defaultRoom
+  editForm.type = model.type || defaultModelType
+  editDialogVisible.value = true
+}
+
+function closeEditDialog() {
+  editDialogVisible.value = false
+  editingModel.value = null
+  editForm.room = ''
+  editForm.type = ''
+}
+
+async function saveModelSettings() {
+  if (!editingModel.value) return
+
+  if (!editForm.room || !editForm.type) {
+    ElMessage.warning('请先选择模型所属厅和模型类型')
+    return
+  }
+
+  isSavingModelSettings.value = true
+
+  try {
+    await apiClient.put(`/model-files/${editingModel.value.id}`, {
+      room: editForm.room,
+      type: editForm.type,
+    })
+
+    const nextModel = {
+      ...editingModel.value,
+      room: editForm.room,
+      type: editForm.type,
+    }
+    const index = uploadedModels.value.findIndex((item) => item.id === nextModel.id)
+    if (index !== -1) {
+      uploadedModels.value.splice(index, 1, nextModel)
+    }
+    if (selectedModel.value?.id === nextModel.id) {
+      selectedModel.value = nextModel
+    }
+
+    ElMessage.success('模型参数已保存')
+    closeEditDialog()
+  } catch (error) {
+    console.error('保存模型参数失败:', error)
+    ElMessage.error('模型参数保存失败，请重试')
+  } finally {
+    isSavingModelSettings.value = false
+  }
+}
+
 function formatSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
@@ -292,12 +381,13 @@ function progressStatus(status: UploadTask['status']) {
                 <div class="model-card-name">{{ model.name }}</div>
                 <div class="model-card-meta">
                   <el-tag size="small" type="info">{{ model.room }}</el-tag>
+                  <el-tag size="small">{{ model.type }}</el-tag>
                   <span class="model-size">{{ formatSize(model.fileSize) }}</span>
                 </div>
               </div>
               <div class="model-card-actions">
-                <el-button :icon="View" size="big" text @click="handleView(model)" />
-                <el-button :icon="Edit" size="big" text @click="handleEdit(model)" />
+                <el-button :icon="View" size="large" text @click="handleView(model)" />
+                <el-button :icon="Edit" size="large" text @click="openEditDialog(model)" />
               </div>
             </div>
           </div>
@@ -305,15 +395,56 @@ function progressStatus(status: UploadTask['status']) {
 
         <!-- 右侧：3D 模型预览区域 -->
         <el-main class="model-preview-main">
-          <div class="preview-placeholder">
+          <ModelViewer
+            v-if="selectedModel"
+            :key="selectedModel.id"
+            :model-url="selectedModel.ossUrl"
+            :show-controls="false"
+            :show-fps="false"
+          />
+          <div v-else class="preview-placeholder">
             <el-icon :size="48"><UploadFilled /></el-icon>
-            <p>3D 模型预览区域</p>
+            <p>点击模型卡片右侧的查看按钮预览模型</p>
           </div>
         </el-main>
       </el-container>
     </el-container>
 
     <!-- 上传进度弹窗 -->
+    <el-dialog
+      v-model="editDialogVisible"
+      title="模型参数设置"
+      width="520px"
+      :close-on-click-modal="false"
+      @close="closeEditDialog"
+    >
+      <div v-if="editingModel" class="edit-model-summary">
+        <span class="edit-model-name">{{ editingModel.name }}</span>
+      </div>
+
+      <el-form label-width="88px" class="model-edit-form">
+        <el-form-item label="所属厅">
+          <el-select v-model="editForm.room" placeholder="请选择所属厅" class="full-width">
+            <el-option v-for="room in roomOptions" :key="room" :label="room" :value="room" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="模型类型">
+          <el-select v-model="editForm.type" placeholder="请选择模型类型" class="full-width">
+            <el-option v-for="type in modelTypeOptions" :key="type" :label="type" :value="type" />
+          </el-select>
+        </el-form-item>
+      </el-form>
+
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="closeEditDialog">取消</el-button>
+          <el-button type="primary" :loading="isSavingModelSettings" @click="saveModelSettings">
+            保存
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
+
     <el-dialog
       v-model="uploadDialogVisible"
       title="上传模型"
@@ -564,6 +695,32 @@ function progressStatus(status: UploadTask['status']) {
   margin-top: 6px;
   font-size: 12px;
   color: #ef4444;
+}
+
+.edit-model-summary {
+  padding: 10px 12px;
+  margin-bottom: 18px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+}
+
+.edit-model-name {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.model-edit-form {
+  padding-right: 8px;
+}
+
+.full-width {
+  width: 100%;
 }
 
 .dialog-footer {

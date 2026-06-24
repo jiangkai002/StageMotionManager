@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { computed, markRaw, shallowRef } from 'vue'
 import type { Engine, Scene } from '@babylonjs/core'
 import type { SceneContext } from '@/scenes/ModelScene'
 import { director } from '@/scenes/SceneDirector'
@@ -17,8 +17,8 @@ import type {
  */
 export const useSceneStore = defineStore('scene', () => {
   // ─── state ────────────────────────────────
-  const engine = ref<Engine | null>(null)
-  const scene = ref<Scene | null>(null)
+  const engine = shallowRef<Engine | null>(null)
+  const scene = shallowRef<Scene | null>(null)
   /** 完整上下文（含 dispose） */
   let ctx: SceneContext | null = null
 
@@ -28,9 +28,9 @@ export const useSceneStore = defineStore('scene', () => {
   // ─── actions ──────────────────────────────
   /** 设置场景上下文（由 ModelViewer 在 onMounted 时调用） */
   function setContext(context: SceneContext) {
-    ctx = context
-    engine.value = context.engine
-    scene.value = context.scene
+    ctx = markRaw(context)
+    engine.value = markRaw(context.engine)
+    scene.value = markRaw(context.scene)
   }
 
   /** 获取完整上下文 */

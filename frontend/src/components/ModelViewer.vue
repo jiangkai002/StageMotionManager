@@ -1,8 +1,8 @@
 <template>
   <div class="model-viewer">
     <canvas ref="bjsCanvas" class="model-viewer__canvas" />
-    <div class="model-viewer__fps">FPS: {{ fps }}</div>
-    <div class="model-viewer__controls">
+    <div v-if="props.showFps" class="model-viewer__fps">FPS: {{ fps }}</div>
+    <div v-if="props.showControls" class="model-viewer__controls">
       <button class="model-viewer__btn" @click="moveBox">移动方块</button>
       <button class="model-viewer__btn" @click="testBatch">测试批量动画</button>
       <button class="model-viewer__btn" @click="testSequence">测试序列动画</button>
@@ -47,10 +47,28 @@ defineExpose({
   executeTrack: (track: StageMotionTrack) => director.executeTrack(track),
 })
 
-const props = withDefaults(defineProps<{ modelUrl?: string; modelUrls?: string[] }>(), {
-  modelUrl: '',
-  modelUrls: () => [],
-})
+const props = withDefaults(
+  defineProps<{
+    modelUrl?: string
+    modelUrls?: string[]
+    performanceMode?: boolean
+    maxDevicePixelRatio?: number
+    renderFps?: number
+    debugLogs?: boolean
+    showControls?: boolean
+    showFps?: boolean
+  }>(),
+  {
+    modelUrl: '',
+    modelUrls: () => [],
+    performanceMode: false,
+    maxDevicePixelRatio: undefined,
+    renderFps: undefined,
+    debugLogs: false,
+    showControls: true,
+    showFps: true,
+  },
+)
 
 onMounted(() => {
   if (bjsCanvas.value) {
@@ -58,12 +76,18 @@ onMounted(() => {
     const ctx = createScene(
       bjsCanvas.value,
       props.modelUrls.length > 0 ? props.modelUrls : props.modelUrl,
+      {
+        performanceMode: props.performanceMode,
+        maxDevicePixelRatio: props.maxDevicePixelRatio,
+        renderFps: props.renderFps,
+        debugLogs: props.debugLogs,
+      },
     )
     sceneStore.setContext(ctx)
 
     // 通知场景就绪
     director.on(DirectorEvent.SceneReady, () => {
-      console.log('[ModelViewer] 场景就绪')
+      if (props.debugLogs) console.log('[ModelViewer] 场景就绪')
     })
 
     // 监听 Babylon 端回传的事件
@@ -88,15 +112,17 @@ onMounted(() => {
 
     unsubs.push(
       director.on(DirectorEvent.MeshSelected, ({ elementId, meshName }) => {
-        console.log('[ModelViewer] 选中构件', elementId, meshName)
+        if (props.debugLogs) console.log('[ModelViewer] 选中构件', elementId, meshName)
         emit('meshSelected', elementId, meshName)
       }),
     )
 
     // FPS 定时上报：Vue → bus → Babylon 处理 → bus 回传 → Vue 更新
-    fpsTimer = setInterval(() => {
-      director.getFps()
-    }, 1000)
+    if (props.showFps) {
+      fpsTimer = setInterval(() => {
+        director.getFps()
+      }, 1000)
+    }
   }
 })
 
