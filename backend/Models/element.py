@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -27,6 +28,9 @@ class StageElement(BaseModel):
     size: str = Field(default="", description="尺寸")
     speed: float = Field(default=0, description="速度")
     model_file_id: str = Field(..., description="关联的模型文件ID")
+    basic_info_id: Optional[str] = Field(
+        default=None, description="关联的构件基础信息ID"
+    )
     motion_ranges: list[MotionRange] = Field(
         default_factory=list, description="构件可运动方位及范围"
     )
