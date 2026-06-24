@@ -23,12 +23,12 @@ class StageElement(BaseModel):
     name: str = Field(..., description="构件名称")
     elementId: int = Field(..., description="构件Id")
     guid: str = Field(default="uniqueId", description="")
+    code: str = Field(default="", description="编号")
     size: str = Field(default="", description="尺寸")
     speed: float = Field(default=0, description="速度")
     model_file_id: str = Field(..., description="关联的模型文件ID")
     motion_ranges: list[MotionRange] = Field(
-        default_factory=list,
-        description="构件可运动方位及范围"
+        default_factory=list, description="构件可运动方位及范围"
     )
 
 
@@ -38,6 +38,7 @@ class StageElementCollection:
     @classmethod
     def get_collection(cls):
         from Models.database import get_collection
+
         return get_collection(cls.COLLECTION_NAME)
 
     @classmethod

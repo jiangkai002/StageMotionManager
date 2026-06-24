@@ -1,21 +1,22 @@
 """构件 API 路由"""
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
 from Models import StageElement
 from Services import StageElementService
+from Services.auth_service import verify_token
 
 router = APIRouter(prefix="/elements", tags=["elements"])
 
 
-@router.post("", summary="创建构件")
+@router.post("", summary="创建构件", dependencies=[Depends(verify_token)])
 async def create_element(element: StageElement):
     """创建一个新的舞台构件"""
     element_id = await StageElementService.create(element)
     return {"id": element_id}
 
 
-@router.get("", summary="查询所有构件")
+@router.get("", summary="查询所有构件", dependencies=[Depends(verify_token)])
 async def get_elements(skip: int = 0, limit: int = 100):
     """分页查询所有构件"""
     return await StageElementService.get_all(skip, limit)
