@@ -6,6 +6,8 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
+from .elementType import ElementType
+
 
 class MaintenancePeriod(str, Enum):
     """维保周期单位"""
@@ -28,6 +30,7 @@ class Frequency(BaseModel):
 class MaintenanceRequirement(BaseModel):
     """维保要求"""
 
+    type: ElementType = Field(..., description="对应的构件类型")
     name: str = Field(..., description="维保名称", example="升降台月度保养")
     content: str = Field(..., description="维保内容")
     frequency: Frequency = Field(..., description="维保频率")
@@ -42,6 +45,7 @@ class MaintenanceRequirement(BaseModel):
 class MaintenanceRequirementUpdate(BaseModel):
     """更新维保要求"""
 
+    type: Optional[ElementType] = Field(None, description="对应的构件类型")
     name: Optional[str] = Field(None, description="维保名称")
     content: Optional[str] = Field(None, description="维保内容")
     frequency: Optional[Frequency] = Field(None, description="维保频率")
@@ -66,4 +70,5 @@ class MaintenanceRequirementCollection:
     def create_indexes(cls):
         """创建索引"""
         collection = cls.get_collection()
+        collection.create_index("type")
         collection.create_index("name")

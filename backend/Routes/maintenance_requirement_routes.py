@@ -4,6 +4,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
+from Models.ElementInfo.elementType import ElementType
 from Models.ElementInfo.maintenance_requirement import (
     MaintenancePeriod,
     MaintenanceRequirement,
@@ -36,10 +37,11 @@ async def get_requirements(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=500),
     name: Optional[str] = Query(None, description="按名称模糊筛选"),
+    type: Optional[ElementType] = Query(None, description="按构件类型筛选"),
 ):
-    """分页查询，可按名称模糊筛选"""
+    """分页查询，可按名称模糊筛选、按类型筛选"""
     return await MaintenanceRequirementService.get_all(
-        skip=skip, limit=limit, name=name
+        skip=skip, limit=limit, name=name, type=type.value if type else None
     )
 
 
@@ -51,6 +53,16 @@ async def get_requirements(
 async def get_periods():
     """返回所有可选的维保周期单位"""
     return [{"label": p.value, "value": p.value} for p in MaintenancePeriod]
+
+
+@router.get(
+    "/by-type/{type}",
+    summary="根据构件类型查询维保要求",
+    dependencies=[Depends(verify_token)],
+)
+async def get_requirements_by_type(type: ElementType):
+    """根据构件类型查询所有维保要求"""
+    return await MaintenanceRequirementService.get_by_type(type.value)
 
 
 @router.get(
@@ -71,9 +83,7 @@ async def get_requirement(doc_id: str):
     summary="更新维保要求",
     dependencies=[Depends(verify_token)],
 )
-async def update_requirement(
-    doc_id: str, update_data: MaintenanceRequirementUpdate
-):
+async def update_requirement(doc_id: str, update_data: MaintenanceRequirementUpdate):
     """根据 _id 更新维保要求"""
     update_doc = update_data.model_dump(exclude_unset=True)
     if not update_doc:

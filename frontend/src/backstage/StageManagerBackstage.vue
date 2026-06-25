@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores'
-import logo from '@/assets/logo.png'
+import logo from '@/assets/logo.svg'
 import modelUpload from '@/assets/modelUpload.svg'
 import stageMotion from '@/assets/stageMotion.svg'
 import basicInfo from '@/assets/basicInfo.svg'
@@ -97,18 +97,7 @@ function handleLogout() {
           </span>
         </el-menu-item>
       </el-menu>
-
-      <div class="aside-footer">
-        <div class="workspace-status">
-          <span class="status-dot"></span>
-          <div>
-            <strong>本地工作区</strong>
-            <span>配置变更待接入后端</span>
-          </div>
-        </div>
-      </div>
     </el-aside>
-
     <el-container class="content-shell">
       <el-header class="backstage-header">
         <div class="header-title">

@@ -1173,6 +1173,8 @@ export class MaintenanceRequirementsService {
       limit?: number;
       /** 按名称模糊筛选 */
       name?: string;
+      /** 按构件类型筛选 */
+      type?: ElementType;
     } = {} as any,
     options: IRequestOptions = {}
   ): Promise<any | null> {
@@ -1180,7 +1182,7 @@ export class MaintenanceRequirementsService {
       let url = basePath + '/api/maintenance-requirements';
 
       const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
-      configs.params = { skip: params['skip'], limit: params['limit'], name: params['name'] };
+      configs.params = { skip: params['skip'], limit: params['limit'], name: params['name'], type: params['type'] };
 
       axios(configs, resolve, reject);
     });
@@ -1213,6 +1215,25 @@ export class MaintenanceRequirementsService {
   static getPeriodsApiMaintenanceRequirementsPeriodsGet(options: IRequestOptions = {}): Promise<any | null> {
     return new Promise((resolve, reject) => {
       let url = basePath + '/api/maintenance-requirements/periods';
+
+      const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 根据构件类型查询维保要求
+   */
+  static getRequirementsByTypeApiMaintenanceRequirementsByTypeTypeGet(
+    params: {
+      /**  */
+      type: ElementType;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/maintenance-requirements/by-type/{type}';
+      url = url.replace('{type}', params['type'] + '');
 
       const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
 
@@ -1361,6 +1382,9 @@ export interface HTTPValidationError {
 
 /** 维保要求 */
 export interface MaintenanceRequirement {
+  /** 对应的构件类型 */
+  type: ElementType;
+
   /** 维保名称 */
   name: string;
 
@@ -1382,6 +1406,9 @@ export interface MaintenanceRequirement {
 
 /** 更新维保要求 */
 export interface MaintenanceRequirementUpdate {
+  /** 对应的构件类型 */
+  type?: ElementType;
+
   /** 维保名称 */
   name?: string;
 

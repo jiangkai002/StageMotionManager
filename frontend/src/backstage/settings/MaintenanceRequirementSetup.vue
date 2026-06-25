@@ -3,15 +3,17 @@ import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus'
 import { Delete, Edit, Link, Plus, Refresh, Search, VideoPlay } from '@element-plus/icons-vue'
 import {
-  MaintenancePeriod,
+  ElementBasicInfoService,
   MaintenanceRequirementsService,
+  type ElementType,
+  type MaintenancePeriod,
   type MaintenanceRequirement,
   type MaintenanceRequirementUpdate,
 } from '@/api'
 
-interface SelectOption {
+interface SelectOption<T = string> {
   label: string
-  value: MaintenancePeriod
+  value: T
 }
 
 type RequirementRow = MaintenanceRequirement & {
@@ -19,10 +21,13 @@ type RequirementRow = MaintenanceRequirement & {
   _id?: string
 }
 
+const defaultPeriod = '月' as MaintenancePeriod
+
 const loading = ref(false)
 const submitting = ref(false)
 const requirements = ref<RequirementRow[]>([])
-const periodOptions = ref<SelectOption[]>([])
+const typeOptions = ref<SelectOption<ElementType>[]>([])
+const periodOptions = ref<SelectOption<MaintenancePeriod>[]>([])
 const keyword = ref('')
 
 const dialogVisible = ref(false)
@@ -31,14 +36,16 @@ const formRef = ref<FormInstance>()
 const editingId = ref('')
 
 const form = reactive({
+  type: '' as ElementType | '',
   name: '',
   content: '',
   times: 1,
-  period: MaintenancePeriod.月 as MaintenancePeriod,
+  period: defaultPeriod,
   video_url: '',
 })
 
 const rules: FormRules = {
+  type: [{ required: true, message: '请选择构件类型', trigger: 'change' }],
   name: [{ required: true, message: '请输入维保名称', trigger: 'blur' }],
   content: [{ required: true, message: '请输入维保内容', trigger: 'blur' }],
   times: [{ required: true, message: '请输入次数', trigger: 'change' }],
@@ -50,7 +57,7 @@ const filteredRequirements = computed(() => {
   const value = keyword.value.trim().toLowerCase()
   if (!value) return requirements.value
   return requirements.value.filter((item) =>
-    [item.name, item.content, item.video_url]
+    [item.type, item.name, item.content, item.video_url]
       .filter(Boolean)
       .some((text) => String(text).toLowerCase().includes(value)),
   )
@@ -59,40 +66,47 @@ const totalCount = computed(() => requirements.value.length)
 const withVideoCount = computed(() => requirements.value.filter((item) => item.video_url).length)
 
 onMounted(async () => {
-  await Promise.all([loadPeriods(), loadRequirements()])
+  await Promise.all([loadElementTypes(), loadPeriods(), loadRequirements()])
 })
 
-function normalizeOptionList(value: unknown): SelectOption[] {
+function normalizeOptionList<T = string>(value: unknown): SelectOption<T>[] {
   if (!Array.isArray(value)) return []
 
   return value
     .map((item) => {
-      if (typeof item === 'string') return { label: item, value: item as MaintenancePeriod }
+      if (typeof item === 'string') return { label: item, value: item as T }
       if (item && typeof item === 'object') {
         const record = item as Record<string, unknown>
         const optionValue = String(record.value ?? '')
-        if (optionValue) {
-          return { label: optionValue, value: optionValue as MaintenancePeriod }
-        }
+        if (optionValue) return { label: optionValue, value: optionValue as T }
       }
       return null
     })
-    .filter((item): item is SelectOption => Boolean(item))
+    .filter((item): item is SelectOption<T> => Boolean(item))
+}
+
+async function loadElementTypes() {
+  try {
+    const data = await ElementBasicInfoService.getTypesApiElementBasicInfoTypesGet()
+    typeOptions.value = normalizeOptionList<ElementType>(data)
+  } catch (error) {
+    console.error('加载构件类型失败:', error)
+  }
 }
 
 async function loadPeriods() {
   try {
     const data = await MaintenanceRequirementsService.getPeriodsApiMaintenanceRequirementsPeriodsGet()
-    periodOptions.value = normalizeOptionList(data)
+    periodOptions.value = normalizeOptionList<MaintenancePeriod>(data)
     if (!periodOptions.value.length) {
       periodOptions.value = [
-        { label: '天', value: MaintenancePeriod.天 },
-        { label: '周', value: MaintenancePeriod.周 },
-        { label: '月', value: MaintenancePeriod.月 },
-        { label: '年', value: MaintenancePeriod.年 },
+        { label: '天', value: '天' as MaintenancePeriod },
+        { label: '周', value: '周' as MaintenancePeriod },
+        { label: '月', value: '月' as MaintenancePeriod },
+        { label: '年', value: '年' as MaintenancePeriod },
       ]
     }
-    form.period = periodOptions.value[0]?.value ?? MaintenancePeriod.月
+    form.period = periodOptions.value[0]?.value ?? defaultPeriod
   } catch (error) {
     console.error('加载维保周期失败:', error)
   }
@@ -121,10 +135,11 @@ function getRowId(row: RequirementRow) {
 
 function resetForm() {
   editingId.value = ''
+  form.type = ''
   form.name = ''
   form.content = ''
   form.times = 1
-  form.period = periodOptions.value[0]?.value ?? MaintenancePeriod.月
+  form.period = periodOptions.value[0]?.value ?? defaultPeriod
   form.video_url = ''
 }
 
@@ -139,10 +154,11 @@ function openEditDialog(row: RequirementRow) {
   resetForm()
   dialogMode.value = 'edit'
   editingId.value = getRowId(row)
+  form.type = row.type
   form.name = row.name
   form.content = row.content
   form.times = row.frequency?.times ?? 1
-  form.period = (row.frequency?.period ?? MaintenancePeriod.月) as MaintenancePeriod
+  form.period = (row.frequency?.period ?? defaultPeriod) as MaintenancePeriod
   form.video_url = row.video_url ?? ''
   dialogVisible.value = true
   nextTick(() => formRef.value?.clearValidate())
@@ -150,6 +166,7 @@ function openEditDialog(row: RequirementRow) {
 
 function buildPayload(): MaintenanceRequirement | MaintenanceRequirementUpdate {
   return {
+    type: form.type as ElementType,
     name: form.name.trim(),
     content: form.content.trim(),
     frequency: {
@@ -222,7 +239,7 @@ function openVideo(url?: string) {
 
 function formatFrequency(row: RequirementRow) {
   const times = row.frequency?.times ?? 1
-  const period = row.frequency?.period ?? '月'
+  const period = row.frequency?.period ?? defaultPeriod
   return `${times} 次 / ${period}`
 }
 </script>
@@ -246,7 +263,7 @@ function formatFrequency(row: RequirementRow) {
           v-model="keyword"
           class="search-input"
           clearable
-          placeholder="搜索维保名称或内容"
+          placeholder="搜索构件类型、维保名称或内容"
           :prefix-icon="Search"
           @keyup.enter="loadRequirements"
           @clear="loadRequirements"
@@ -265,6 +282,7 @@ function formatFrequency(row: RequirementRow) {
         border
         :header-cell-style="{ background: '#f9fafb' }"
       >
+        <el-table-column prop="type" label="构件类型" min-width="180" show-overflow-tooltip />
         <el-table-column prop="name" label="维保名称" min-width="180" show-overflow-tooltip />
         <el-table-column label="频率" width="130" align="center">
           <template #default="{ row }">
@@ -307,10 +325,20 @@ function formatFrequency(row: RequirementRow) {
     <el-dialog
       v-model="dialogVisible"
       :title="dialogTitle"
-      width="640px"
+      width="680px"
       :close-on-click-modal="false"
     >
       <el-form ref="formRef" :model="form" :rules="rules" label-width="96px">
+        <el-form-item label="构件类型" prop="type">
+          <el-select v-model="form.type" filterable placeholder="请选择构件类型" class="full-width">
+            <el-option
+              v-for="item in typeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
         <el-form-item label="维保名称" prop="name">
           <el-input v-model="form.name" placeholder="请输入维保名称" />
         </el-form-item>
@@ -409,7 +437,7 @@ function formatFrequency(row: RequirementRow) {
 }
 
 .search-input {
-  width: 280px;
+  width: 300px;
 }
 
 .table-panel {
@@ -436,6 +464,10 @@ function formatFrequency(row: RequirementRow) {
 
 .row-actions :deep(.el-button + .el-button) {
   margin-left: 0;
+}
+
+.full-width {
+  width: 100%;
 }
 
 .frequency-fields {

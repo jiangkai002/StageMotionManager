@@ -51,16 +51,26 @@ class MaintenanceRequirementService:
         return serialize_doc(doc)
 
     @classmethod
+    async def get_by_type(cls, type: str) -> list[dict]:
+        """根据构件类型查询所有维保要求"""
+        cursor = cls.collection.find({"type": type})
+        docs = await cursor.to_list(length=100)
+        return serialize_docs(docs)
+
+    @classmethod
     async def get_all(
         cls,
         skip: int = 0,
         limit: int = 100,
         name: Optional[str] = None,
+        type: Optional[str] = None,
     ) -> list[dict]:
-        """分页查询，可按名称模糊筛选"""
+        """分页查询，可按名称模糊筛选、按类型筛选"""
         query = {}
         if name:
             query["name"] = {"$regex": name, "$options": "i"}
+        if type:
+            query["type"] = type
         cursor = cls.collection.find(query).skip(skip).limit(limit)
         docs = await cursor.to_list(length=limit)
         return serialize_docs(docs)
@@ -99,4 +109,10 @@ class MaintenanceRequirementService:
     async def delete_by_name(cls, name: str) -> int:
         """根据维保名称删除"""
         result = await cls.collection.delete_one({"name": name})
+        return result.deleted_count
+
+    @classmethod
+    async def delete_by_type(cls, type: str) -> int:
+        """根据构件类型批量删除"""
+        result = await cls.collection.delete_many({"type": type})
         return result.deleted_count
