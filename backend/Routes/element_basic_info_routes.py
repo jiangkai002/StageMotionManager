@@ -5,9 +5,9 @@ from typing import Optional
 
 from Models.ElementInfo.ElementBasicInfo import (
     ElementBasicInfo,
-    ElementType,
     RelatedDocument,
 )
+from Models.ElementInfo.ElementType import ElementType
 from Services import ElementBasicInfoService
 from Services.auth_service import verify_token
 

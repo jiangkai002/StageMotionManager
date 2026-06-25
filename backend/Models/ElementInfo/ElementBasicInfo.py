@@ -1,27 +1,11 @@
 """构件基础信息模型"""
 
 from datetime import datetime
-from enum import Enum
 from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
-
-class ElementType(str, Enum):
-    """构件类型"""
-
-    UNDER_STAGE_TOWER = "台下设备-台塔"
-    UNDER_STAGE_FRONT = "台下设备-舞台前部"
-    UNDER_STAGE_AUX = "台下设备-辅助舞台"
-    OVER_STAGE_TOWER = "台上设备-台塔"
-    OVER_STAGE_FRONT = "台上设备-舞台前部"
-    OVER_STAGE_SUPPORT = "台上设备-支持舞台"
-    CONTROL_SYSTEM = "控制系统"
-    EXTRA_EQUIPMENT = "额外设备"
-    REHEARSAL_HALL = "合成排练厅设备"
-    BUILDING_INFRA = "建筑基础设施"
-    UNDER_STAGE = "台下设备"
-    OVER_STAGE = "台上设备"
+from Models.ElementInfo.ElementType import ElementType
 
 
 class RelatedDocument(BaseModel):
@@ -35,8 +19,6 @@ class RelatedDocument(BaseModel):
 
 class ElementBasicInfo(BaseModel):
     """构件基础信息"""
-
-    element_id: int = Field(..., description="构件ID")
     name: str = Field(..., description="构件名称", example="主舞台升降台")
     type: ElementType = Field(..., description="构件类型")
     specification: str = Field(default="", description="规格", example="4m×2m")
