@@ -1,9 +1,10 @@
 """模型文件 API 路由"""
 
-from fastapi import APIRouter, Depends, HTTPException
 from typing import List
 
-from Models import ModelFile
+from fastapi import APIRouter, Depends, HTTPException
+
+from Models import ModelFile, ModelFileUpdate
 from Services import ModelFileService
 from Services.auth_service import verify_token
 
@@ -12,7 +13,7 @@ router = APIRouter(prefix="/model-files", tags=["model-files"])
 
 @router.post("", summary="上传模型文件记录", dependencies=[Depends(verify_token)])
 async def create_model_file(model_file: ModelFile):
-    """创建一个新的模型文件记录"""
+    """创建一条新的模型文件记录"""
     file_id = await ModelFileService.create(model_file)
     return {"id": file_id}
 
@@ -40,9 +41,13 @@ async def get_model_file(file_id: str):
 
 
 @router.put("/{file_id}", summary="更新模型文件")
-async def update_model_file(file_id: str, update_data: dict):
+async def update_model_file(file_id: str, update_data: ModelFileUpdate):
     """根据 _id 更新模型文件信息"""
-    count = await ModelFileService.update_by_id(file_id, update_data)
+    update_doc = update_data.model_dump(exclude_unset=True)
+    if not update_doc:
+        raise HTTPException(status_code=400, detail="没有可更新的字段")
+
+    count = await ModelFileService.update_by_id(file_id, update_doc)
     if count == 0:
         raise HTTPException(status_code=404, detail="模型文件不存在或没有变化")
     return {"updated": count}

@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from enum import Enum
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -29,6 +29,16 @@ class OperationMethod(BaseModel):
     )
     created_at: datetime = Field(default_factory=datetime.now, description="创建时间")
     updated_at: datetime = Field(default_factory=datetime.now, description="更新时间")
+
+    class Config:
+        use_enum_values = True
+
+
+class OperationMethodUpdate(BaseModel):
+    type: Optional[ElementType] = Field(None, description="鏋勪欢绫诲埆")
+    operation_steps: Optional[List[OperationStep]] = Field(
+        None, description="鎿嶄綔姝ラ鍒楄〃"
+    )
 
     class Config:
         use_enum_values = True

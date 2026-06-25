@@ -3,12 +3,13 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field
 from bson import ObjectId
+from pydantic import BaseModel, Field
 
 
 class SceneDeviceItem(BaseModel):
     """场景中的设备项"""
+
     device_id: str = Field(..., description="设备ID")
     target_position: float = Field(..., description="目标位置(mm)")
     speed: float = Field(default=100.0, description="运动速度(mm/s)")
@@ -16,6 +17,7 @@ class SceneDeviceItem(BaseModel):
 
 class Scene(BaseModel):
     """场景预设模型"""
+
     name: str = Field(..., description="场景名称", example="开幕场景")
     description: Optional[str] = Field(None, description="场景描述")
     devices: list[SceneDeviceItem] = Field(default_factory=list, description="设备目标列表")
@@ -27,13 +29,27 @@ class Scene(BaseModel):
         json_encoders = {ObjectId: str}
 
 
+class SceneUpdate(BaseModel):
+    """更新场景预设"""
+
+    name: Optional[str] = Field(None, description="场景名称")
+    description: Optional[str] = Field(None, description="场景描述")
+    devices: Optional[list[SceneDeviceItem]] = Field(None, description="设备目标列表")
+    duration: Optional[float] = Field(None, description="预计执行时长(s)")
+
+    class Config:
+        json_encoders = {ObjectId: str}
+
+
 class SceneCollection:
     """场景集合操作"""
+
     COLLECTION_NAME = "scenes"
 
     @classmethod
     def get_collection(cls):
         from Models.database import get_collection
+
         return get_collection(cls.COLLECTION_NAME)
 
     @classmethod

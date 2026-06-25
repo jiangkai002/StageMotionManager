@@ -43,6 +43,18 @@ const routes: RouteRecordRaw[] = [
         component: () => import('../backstage/settings/ElementMotionParaSetup.vue'),
         meta: { requiresAuth: true, title: '元素运动配置' },
       },
+      {
+        path: 'settings/basic-info',
+        name: 'backstage-basic-info',
+        component: () => import('../backstage/settings/BasicInfoSetup.vue'),
+        meta: { requiresAuth: true, title: '构件基础信息' },
+      },
+      {
+        path: 'settings/operation-method',
+        name: 'backstage-operation-method',
+        component: () => import('../backstage/settings/OperationMethodSetup.vue'),
+        meta: { requiresAuth: true, title: '操作方法管理' },
+      },
     ],
   },
 ]

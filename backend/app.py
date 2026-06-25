@@ -10,6 +10,9 @@ from Routes.element_routes import router as element_router
 from Routes.model_file_routes import router as model_file_router
 from Routes.element_basic_info_routes import router as element_basic_info_router
 from Routes.operation_method_routes import router as operation_method_router
+from Routes.scene_routes import router as scene_router
+from Routes.motion_task_routes import router as motion_task_router
+from Routes.maintenance_requirement_routes import router as maintenance_requirement_router
 
 
 class MongoJSONResponse(JSONResponse):
@@ -43,6 +46,9 @@ app.include_router(element_router, prefix="/api")
 app.include_router(model_file_router, prefix="/api")
 app.include_router(element_basic_info_router, prefix="/api")
 app.include_router(operation_method_router, prefix="/api")
+app.include_router(scene_router, prefix="/api")
+app.include_router(motion_task_router, prefix="/api")
+app.include_router(maintenance_requirement_router, prefix="/api")
 
 
 @app.get("/")

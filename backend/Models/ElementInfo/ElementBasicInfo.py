@@ -9,7 +9,7 @@ from .elementType import ElementType
 
 
 class RelatedDocument(BaseModel):
-    """关联文档（OSS 上传的 PDF）"""
+    """关联文档，通常是 OSS 上传的 PDF"""
 
     name: str = Field(..., description="文档名称", example="设备说明书.pdf")
     oss_path: str = Field(..., description="OSS 存储路径")
@@ -22,7 +22,7 @@ class ElementBasicInfo(BaseModel):
 
     name: str = Field(..., description="构件名称", example="主舞台升降台")
     type: ElementType = Field(..., description="构件类型")
-    specification: str = Field(default="", description="规格", example="4m×2m")
+    specification: str = Field(default="", description="规格", example="4m x 2m")
     supplier: str = Field(default="", description="供应商", example="XXX舞台设备公司")
     rated_load: str = Field(default="", description="额定荷载", example="500kg")
     drive_method: str = Field(default="", description="驱动方式", example="电动")
@@ -32,6 +32,22 @@ class ElementBasicInfo(BaseModel):
     )
     created_at: datetime = Field(default_factory=datetime.now, description="创建时间")
     updated_at: datetime = Field(default_factory=datetime.now, description="更新时间")
+
+    class Config:
+        use_enum_values = True
+
+
+class ElementBasicInfoUpdate(BaseModel):
+    """更新构件基础信息"""
+
+    name: Optional[str] = Field(None, description="构件名称")
+    type: Optional[ElementType] = Field(None, description="构件类型")
+    specification: Optional[str] = Field(None, description="规格")
+    supplier: Optional[str] = Field(None, description="供应商")
+    rated_load: Optional[str] = Field(None, description="额定荷载")
+    drive_method: Optional[str] = Field(None, description="驱动方式")
+    function_description: Optional[str] = Field(None, description="功能说明")
+    related_documents: Optional[List[RelatedDocument]] = Field(None, description="关联文档")
 
     class Config:
         use_enum_values = True

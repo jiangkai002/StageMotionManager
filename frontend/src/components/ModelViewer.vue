@@ -2,12 +2,6 @@
   <div class="model-viewer">
     <canvas ref="bjsCanvas" class="model-viewer__canvas" />
     <div v-if="props.showFps" class="model-viewer__fps">FPS: {{ fps }}</div>
-    <div v-if="props.showControls" class="model-viewer__controls">
-      <button class="model-viewer__btn" @click="moveBox">移动方块</button>
-      <button class="model-viewer__btn" @click="testBatch">测试批量动画</button>
-      <button class="model-viewer__btn" @click="testSequence">测试序列动画</button>
-      <button class="model-viewer__btn model-viewer__btn--danger" @click="stopAll">停止全部</button>
-    </div>
   </div>
 </template>
 
@@ -154,48 +148,6 @@ onBeforeUnmount(() => {
   sceneStore.dispose()
   sceneContext = null
 })
-
-function moveBox() {
-  const x = Math.random() * 6 - 3
-  const y = Math.random() * 3
-  const z = Math.random() * 6 - 3
-  director.setPosition('box-red', x, y, z)
-}
-
-function testBatch() {
-  const batch: StageCommandBatch = {
-    tracks: [
-      {
-        elementId: 'box-red',
-        translation: { x: 3, y: 2, z: 0 },
-        duration: 2,
-        relative: true,
-        syncGroup: 'group1',
-      },
-      {
-        elementId: 'box-yellow',
-        translation: { x: 0, y: 2, z: 3 },
-        duration: 2,
-        relative: true,
-        syncGroup: 'group1',
-      },
-      {
-        elementId: 'box-green',
-        rotation: { pitch: 0, yaw: 90, roll: 0 },
-        duration: 2,
-        relative: true,
-        syncGroup: 'group1',
-      },
-    ],
-  }
-  director.executeBatch(batch)
-}
-
-function testSequence() {}
-
-function stopAll() {
-  director.executeControl({ op: 'stopAll' })
-}
 </script>
 
 <style scoped>

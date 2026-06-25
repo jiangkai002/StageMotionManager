@@ -1,10 +1,12 @@
 """构件基础信息 API 路由"""
 
-from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from Models.ElementInfo.elementBasicInfo import (
     ElementBasicInfo,
+    ElementBasicInfoUpdate,
     RelatedDocument,
 )
 from Models.ElementInfo.elementType import ElementType
@@ -14,9 +16,6 @@ from Services.auth_service import verify_token
 router = APIRouter(prefix="/element-basic-info", tags=["element-basic-info"])
 
 
-# ==================== 增删改查 ====================
-
-
 @router.post("", summary="创建构件基础信息", dependencies=[Depends(verify_token)])
 async def create_basic_info(info: ElementBasicInfo):
     """创建一条构件基础信息"""
@@ -24,7 +23,7 @@ async def create_basic_info(info: ElementBasicInfo):
     return {"id": doc_id}
 
 
-@router.post("/batch", summary="批量创建", dependencies=[Depends(verify_token)])
+@router.post("/batch", summary="批量创建构件基础信息", dependencies=[Depends(verify_token)])
 async def create_basic_infos(infos: list[ElementBasicInfo]):
     """批量创建构件基础信息"""
     doc_ids = await ElementBasicInfoService.create_many(infos)
@@ -59,9 +58,13 @@ async def get_basic_info(element_id: int):
 
 
 @router.put("/{element_id}", summary="更新构件基础信息", dependencies=[Depends(verify_token)])
-async def update_basic_info(element_id: int, update_data: dict):
+async def update_basic_info(element_id: int, update_data: ElementBasicInfoUpdate):
     """根据 element_id 更新构件基础信息"""
-    count = await ElementBasicInfoService.update_by_element_id(element_id, update_data)
+    update_doc = update_data.model_dump(exclude_unset=True)
+    if not update_doc:
+        raise HTTPException(status_code=400, detail="没有可更新的字段")
+
+    count = await ElementBasicInfoService.update_by_element_id(element_id, update_doc)
     if count == 0:
         raise HTTPException(status_code=404, detail="构件不存在或没有变化")
     return {"updated": count}
@@ -76,16 +79,13 @@ async def delete_basic_info(element_id: int):
     return {"deleted": count}
 
 
-# ==================== 关联文档管理 ====================
-
-
 @router.post(
     "/{element_id}/documents",
     summary="追加关联文档",
     dependencies=[Depends(verify_token)],
 )
 async def add_related_document(element_id: int, document: RelatedDocument):
-    """为指定构件追加一个关联文档（OSS 上传的 PDF）"""
+    """为指定构件追加一个关联文档"""
     count = await ElementBasicInfoService.add_related_document(
         element_id, document.model_dump()
     )

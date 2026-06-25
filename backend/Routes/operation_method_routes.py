@@ -6,6 +6,7 @@ from typing import Optional
 from Models.ElementInfo.elementType import ElementType
 from Models.ElementInfo.operation_method import (
     OperationMethod,
+    OperationMethodUpdate,
     OperationStep,
 )
 from Services import OperationMethodService
@@ -61,9 +62,13 @@ async def get_operation_method(type: ElementType):
 
 
 @router.put("/{type}", summary="更新操作方法", dependencies=[Depends(verify_token)])
-async def update_operation_method(type: ElementType, update_data: dict):
+async def update_operation_method(type: ElementType, update_data: OperationMethodUpdate):
     """根据构件类型更新操作方法"""
-    count = await OperationMethodService.update_by_type(type.value, update_data)
+    update_doc = update_data.model_dump(exclude_unset=True)
+    if not update_doc:
+        raise HTTPException(status_code=400, detail="娌℃湁鍙洿鏂扮殑瀛楁")
+
+    count = await OperationMethodService.update_by_type(type.value, update_doc)
     if count == 0:
         raise HTTPException(status_code=404, detail="操作方法不存在或没有变化")
     return {"updated": count}

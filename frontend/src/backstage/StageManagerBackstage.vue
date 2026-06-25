@@ -5,6 +5,8 @@ import { useUserStore } from '@/stores'
 import logo from '@/assets/logo.png'
 import modelUpload from '@/assets/modelUpload.svg'
 import stageMotion from '@/assets/stageMotion.svg'
+import basicInfo from '@/assets/basicInfo.svg'
+import operationMethod from '@/assets/operationMethod.svg'
 
 interface NavigationItem {
   path: string
@@ -30,12 +32,22 @@ const navigationItems: NavigationItem[] = [
     description: '配置元素运动参数',
     icon: stageMotion,
   },
+  {
+    path: '/backstage/settings/basic-info',
+    title: '构件基础信息',
+    description: '管理构件基础参数',
+    icon: basicInfo,
+  },
+  {
+    path: '/backstage/settings/operation-method',
+    title: '操作方法管理',
+    description: '管理各构件操作步骤',
+    icon: operationMethod,
+  },
 ]
 
 const activeMenu = computed(() => route.path)
-const currentNavigation = computed(() =>
-  navigationItems.find((item) => item.path === route.path),
-)
+const currentNavigation = computed(() => navigationItems.find((item) => item.path === route.path))
 const pageTitle = computed(() => currentNavigation.value?.title ?? '后台管理')
 const pageDescription = computed(
   () => currentNavigation.value?.description ?? '集中管理舞台资源与运动配置',
@@ -69,16 +81,8 @@ function handleLogout() {
       </div>
 
       <div class="nav-section-label">管理</div>
-      <el-menu
-        class="backstage-menu"
-        :default-active="activeMenu"
-        @select="handleMenuSelect"
-      >
-        <el-menu-item
-          v-for="item in navigationItems"
-          :key="item.path"
-          :index="item.path"
-        >
+      <el-menu class="backstage-menu" :default-active="activeMenu" @select="handleMenuSelect">
+        <el-menu-item v-for="item in navigationItems" :key="item.path" :index="item.path">
           <img :src="item.icon" class="menu-icon" alt="" />
           <span class="menu-text">
             <strong>{{ item.title }}</strong>

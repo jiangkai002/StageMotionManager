@@ -191,6 +191,8 @@ export class ElementsService {
     params: {
       /**  */
       elementId: number;
+      /** requestBody */
+      body?: StageElementUpdate;
     } = {} as any,
     options: IRequestOptions = {}
   ): Promise<any | null> {
@@ -199,6 +201,10 @@ export class ElementsService {
       url = url.replace('{element_id}', params['elementId'] + '');
 
       const configs: IRequestConfig = getConfigs('put', 'application/json', url, options);
+
+      let data = params.body;
+
+      configs.data = data;
 
       axios(configs, resolve, reject);
     });
@@ -316,6 +322,8 @@ export class ModelFilesService {
     params: {
       /**  */
       fileId: string;
+      /** requestBody */
+      body?: ModelFileUpdate;
     } = {} as any,
     options: IRequestOptions = {}
   ): Promise<any | null> {
@@ -324,6 +332,10 @@ export class ModelFilesService {
       url = url.replace('{file_id}', params['fileId'] + '');
 
       const configs: IRequestConfig = getConfigs('put', 'application/json', url, options);
+
+      let data = params.body;
+
+      configs.data = data;
 
       axios(configs, resolve, reject);
     });
@@ -396,7 +408,7 @@ export class ElementBasicInfoService {
     });
   }
   /**
-   * 批量创建
+   * 批量创建构件基础信息
    */
   static createBasicInfosApiElementBasicInfoBatchPost(
     params: {
@@ -455,6 +467,8 @@ export class ElementBasicInfoService {
     params: {
       /**  */
       elementId: number;
+      /** requestBody */
+      body?: ElementBasicInfoUpdate;
     } = {} as any,
     options: IRequestOptions = {}
   ): Promise<any | null> {
@@ -463,6 +477,10 @@ export class ElementBasicInfoService {
       url = url.replace('{element_id}', params['elementId'] + '');
 
       const configs: IRequestConfig = getConfigs('put', 'application/json', url, options);
+
+      let data = params.body;
+
+      configs.data = data;
 
       axios(configs, resolve, reject);
     });
@@ -641,6 +659,8 @@ export class OperationMethodService {
     params: {
       /**  */
       type: ElementType;
+      /** requestBody */
+      body?: OperationMethodUpdate;
     } = {} as any,
     options: IRequestOptions = {}
   ): Promise<any | null> {
@@ -649,6 +669,10 @@ export class OperationMethodService {
       url = url.replace('{type}', params['type'] + '');
 
       const configs: IRequestConfig = getConfigs('put', 'application/json', url, options);
+
+      let data = params.body;
+
+      configs.data = data;
 
       axios(configs, resolve, reject);
     });
@@ -721,6 +745,545 @@ export class OperationMethodService {
   }
 }
 
+export class ScenesService {
+  /**
+   * 创建场景
+   */
+  static createSceneApiScenesPost(
+    params: {
+      /** requestBody */
+      body?: Scene;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/scenes';
+
+      const configs: IRequestConfig = getConfigs('post', 'application/json', url, options);
+
+      let data = params.body;
+
+      configs.data = data;
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 查询所有场景
+   */
+  static getScenesApiScenesGet(
+    params: {
+      /**  */
+      skip?: number;
+      /**  */
+      limit?: number;
+      /** 按名称模糊筛选 */
+      name?: string;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/scenes';
+
+      const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
+      configs.params = { skip: params['skip'], limit: params['limit'], name: params['name'] };
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 批量创建场景
+   */
+  static createScenesApiScenesBatchPost(
+    params: {
+      /** requestBody */
+      body?: Scene[];
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/scenes/batch';
+
+      const configs: IRequestConfig = getConfigs('post', 'application/json', url, options);
+
+      let data = params.body;
+
+      configs.data = data;
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 根据 ID 查询场景
+   */
+  static getSceneApiScenesDocIdGet(
+    params: {
+      /**  */
+      docId: string;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/scenes/{doc_id}';
+      url = url.replace('{doc_id}', params['docId'] + '');
+
+      const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 更新场景
+   */
+  static updateSceneApiScenesDocIdPut(
+    params: {
+      /**  */
+      docId: string;
+      /** requestBody */
+      body?: SceneUpdate;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/scenes/{doc_id}';
+      url = url.replace('{doc_id}', params['docId'] + '');
+
+      const configs: IRequestConfig = getConfigs('put', 'application/json', url, options);
+
+      let data = params.body;
+
+      configs.data = data;
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 删除场景
+   */
+  static deleteSceneApiScenesDocIdDelete(
+    params: {
+      /**  */
+      docId: string;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/scenes/{doc_id}';
+      url = url.replace('{doc_id}', params['docId'] + '');
+
+      const configs: IRequestConfig = getConfigs('delete', 'application/json', url, options);
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 追加设备项
+   */
+  static addDeviceApiScenesDocIdDevicesPost(
+    params: {
+      /**  */
+      docId: string;
+      /** requestBody */
+      body?: SceneDeviceItem;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/scenes/{doc_id}/devices';
+      url = url.replace('{doc_id}', params['docId'] + '');
+
+      const configs: IRequestConfig = getConfigs('post', 'application/json', url, options);
+
+      let data = params.body;
+
+      configs.data = data;
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 移除设备项
+   */
+  static removeDeviceApiScenesDocIdDevicesDelete(
+    params: {
+      /**  */
+      docId: string;
+      /** 设备ID */
+      deviceId: string;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/scenes/{doc_id}/devices';
+      url = url.replace('{doc_id}', params['docId'] + '');
+
+      const configs: IRequestConfig = getConfigs('delete', 'application/json', url, options);
+      configs.params = { device_id: params['deviceId'] };
+
+      axios(configs, resolve, reject);
+    });
+  }
+}
+
+export class MotionTasksService {
+  /**
+   * 创建运动任务
+   */
+  static createTaskApiMotionTasksPost(
+    params: {
+      /** requestBody */
+      body?: MotionTask;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/motion-tasks';
+
+      const configs: IRequestConfig = getConfigs('post', 'application/json', url, options);
+
+      let data = params.body;
+
+      configs.data = data;
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 查询所有运动任务
+   */
+  static getTasksApiMotionTasksGet(
+    params: {
+      /**  */
+      skip?: number;
+      /**  */
+      limit?: number;
+      /** 按状态筛选 */
+      status?: TaskStatus;
+      /** 按设备ID筛选 */
+      deviceId?: string;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/motion-tasks';
+
+      const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
+      configs.params = {
+        skip: params['skip'],
+        limit: params['limit'],
+        status: params['status'],
+        device_id: params['deviceId']
+      };
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 批量创建运动任务
+   */
+  static createTasksApiMotionTasksBatchPost(
+    params: {
+      /** requestBody */
+      body?: MotionTask[];
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/motion-tasks/batch';
+
+      const configs: IRequestConfig = getConfigs('post', 'application/json', url, options);
+
+      let data = params.body;
+
+      configs.data = data;
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 获取待执行任务
+   */
+  static getPendingTasksApiMotionTasksPendingGet(
+    params: {
+      /**  */
+      limit?: number;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/motion-tasks/pending';
+
+      const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
+      configs.params = { limit: params['limit'] };
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 获取所有任务状态
+   */
+  static getStatusesApiMotionTasksStatusesGet(options: IRequestOptions = {}): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/motion-tasks/statuses';
+
+      const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 根据 ID 查询任务
+   */
+  static getTaskApiMotionTasksDocIdGet(
+    params: {
+      /**  */
+      docId: string;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/motion-tasks/{doc_id}';
+      url = url.replace('{doc_id}', params['docId'] + '');
+
+      const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 更新任务
+   */
+  static updateTaskApiMotionTasksDocIdPut(
+    params: {
+      /**  */
+      docId: string;
+      /** requestBody */
+      body?: MotionTaskUpdate;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/motion-tasks/{doc_id}';
+      url = url.replace('{doc_id}', params['docId'] + '');
+
+      const configs: IRequestConfig = getConfigs('put', 'application/json', url, options);
+
+      let data = params.body;
+
+      configs.data = data;
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 删除任务
+   */
+  static deleteTaskApiMotionTasksDocIdDelete(
+    params: {
+      /**  */
+      docId: string;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/motion-tasks/{doc_id}';
+      url = url.replace('{doc_id}', params['docId'] + '');
+
+      const configs: IRequestConfig = getConfigs('delete', 'application/json', url, options);
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 更新任务状态
+   */
+  static updateTaskStatusApiMotionTasksDocIdStatusPut(
+    params: {
+      /**  */
+      docId: string;
+      /** 新状态 */
+      status: TaskStatus;
+      /** 错误信息，失败时填写 */
+      errorMessage?: string;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/motion-tasks/{doc_id}/status';
+      url = url.replace('{doc_id}', params['docId'] + '');
+
+      const configs: IRequestConfig = getConfigs('put', 'application/json', url, options);
+      configs.params = { status: params['status'], error_message: params['errorMessage'] };
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 按状态批量删除任务
+   */
+  static deleteTasksByStatusApiMotionTasksByStatusStatusDelete(
+    params: {
+      /**  */
+      status: TaskStatus;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/motion-tasks/by-status/{status}';
+      url = url.replace('{status}', params['status'] + '');
+
+      const configs: IRequestConfig = getConfigs('delete', 'application/json', url, options);
+
+      axios(configs, resolve, reject);
+    });
+  }
+}
+
+export class MaintenanceRequirementsService {
+  /**
+   * 创建维保需求
+   */
+  static createRequirementApiMaintenanceRequirementsPost(
+    params: {
+      /** requestBody */
+      body?: MaintenanceRequirement;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/maintenance-requirements';
+
+      const configs: IRequestConfig = getConfigs('post', 'application/json', url, options);
+
+      let data = params.body;
+
+      configs.data = data;
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 查询所有维保需求
+   */
+  static getRequirementsApiMaintenanceRequirementsGet(
+    params: {
+      /**  */
+      skip?: number;
+      /**  */
+      limit?: number;
+      /** 按名称模糊筛选 */
+      name?: string;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/maintenance-requirements';
+
+      const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
+      configs.params = { skip: params['skip'], limit: params['limit'], name: params['name'] };
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 批量创建
+   */
+  static createRequirementsApiMaintenanceRequirementsBatchPost(
+    params: {
+      /** requestBody */
+      body?: MaintenanceRequirement[];
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/maintenance-requirements/batch';
+
+      const configs: IRequestConfig = getConfigs('post', 'application/json', url, options);
+
+      let data = params.body;
+
+      configs.data = data;
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 获取所有维保周期单位
+   */
+  static getPeriodsApiMaintenanceRequirementsPeriodsGet(options: IRequestOptions = {}): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/maintenance-requirements/periods';
+
+      const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 根据 ID 查询维保需求
+   */
+  static getRequirementApiMaintenanceRequirementsDocIdGet(
+    params: {
+      /**  */
+      docId: string;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/maintenance-requirements/{doc_id}';
+      url = url.replace('{doc_id}', params['docId'] + '');
+
+      const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 更新维保需求
+   */
+  static updateRequirementApiMaintenanceRequirementsDocIdPut(
+    params: {
+      /**  */
+      docId: string;
+      /** requestBody */
+      body?: MaintenanceRequirementUpdate;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/maintenance-requirements/{doc_id}';
+      url = url.replace('{doc_id}', params['docId'] + '');
+
+      const configs: IRequestConfig = getConfigs('put', 'application/json', url, options);
+
+      let data = params.body;
+
+      configs.data = data;
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 删除维保需求
+   */
+  static deleteRequirementApiMaintenanceRequirementsDocIdDelete(
+    params: {
+      /**  */
+      docId: string;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/maintenance-requirements/{doc_id}';
+      url = url.replace('{doc_id}', params['docId'] + '');
+
+      const configs: IRequestConfig = getConfigs('delete', 'application/json', url, options);
+
+      axios(configs, resolve, reject);
+    });
+  }
+}
+
 /** 构件基础信息 */
 export interface ElementBasicInfo {
   /** 构件名称 */
@@ -754,10 +1317,82 @@ export interface ElementBasicInfo {
   updated_at?: Date;
 }
 
+/** 更新构件基础信息 */
+export interface ElementBasicInfoUpdate {
+  /** 构件名称 */
+  name?: string;
+
+  /** 构件类型 */
+  type?: ElementType;
+
+  /** 规格 */
+  specification?: string;
+
+  /** 供应商 */
+  supplier?: string;
+
+  /** 额定荷载 */
+  rated_load?: string;
+
+  /** 驱动方式 */
+  drive_method?: string;
+
+  /** 功能说明 */
+  function_description?: string;
+
+  /** 关联文档 */
+  related_documents?: RelatedDocument[];
+}
+
+/** 维保频率 */
+export interface Frequency {
+  /** 次数 */
+  times?: number;
+
+  /** 周期单位 */
+  period?: MaintenancePeriod;
+}
+
 /** HTTPValidationError */
 export interface HTTPValidationError {
   /**  */
   detail?: ValidationError[];
+}
+
+/** 维保需求 */
+export interface MaintenanceRequirement {
+  /** 维保名称 */
+  name: string;
+
+  /** 维保内容 */
+  content: string;
+
+  /**  */
+  frequency: Frequency;
+
+  /** 教学视频地址 */
+  video_url?: string;
+
+  /** 创建时间 */
+  created_at?: Date;
+
+  /** 更新时间 */
+  updated_at?: Date;
+}
+
+/** 更新维保需求 */
+export interface MaintenanceRequirementUpdate {
+  /** 维保名称 */
+  name?: string;
+
+  /** 维保内容 */
+  content?: string;
+
+  /** 维保频率 */
+  frequency?: Frequency;
+
+  /** 教学视频地址 */
+  video_url?: string;
 }
 
 /** 舞台模型文件 */
@@ -769,9 +1404,9 @@ export interface ModelFile {
   file_type: ModelFileType;
 
   /** 模型类型 */
-  c: string;
+  type: string;
 
-  /** 属于哪个厅 */
+  /** 所属厅 */
   room: string;
 
   /** 文件存储路径 */
@@ -790,6 +1425,30 @@ export interface ModelFile {
   updated_at?: Date;
 }
 
+/** 更新模型文件 */
+export interface ModelFileUpdate {
+  /** 文件名称 */
+  name?: string;
+
+  /** 模型格式 */
+  file_type?: ModelFileType;
+
+  /** 模型类型 */
+  type?: string;
+
+  /** 所属厅 */
+  room?: string;
+
+  /** 文件存储路径 */
+  file_path?: string;
+
+  /** 文件大小(字节) */
+  file_size?: number;
+
+  /** 文件描述 */
+  description?: string;
+}
+
 /** MotionRange */
 export interface MotionRange {
   /** 运动类型 */
@@ -801,8 +1460,71 @@ export interface MotionRange {
   /** 最大范围 */
   max: number;
 
-  /** 单位，平移默认mm，旋转默认度 */
+  /** 单位，平移默认 mm，旋转默认度 */
   unit?: string;
+}
+
+/** 运动任务模型 */
+export interface MotionTask {
+  /** 设备ID */
+  device_id: string;
+
+  /** 关联场景ID */
+  scene_id?: string;
+
+  /** 目标位置(mm) */
+  target_position: number;
+
+  /** 运动速度(mm\/s) */
+  speed?: number;
+
+  /**  */
+  status?: TaskStatus;
+
+  /** 优先级，数字越大优先级越高 */
+  priority?: number;
+
+  /** 错误信息 */
+  error_message?: string;
+
+  /** 开始执行时间 */
+  started_at?: Date;
+
+  /** 完成时间 */
+  completed_at?: Date;
+
+  /** 创建时间 */
+  created_at?: Date;
+}
+
+/** 更新运动任务 */
+export interface MotionTaskUpdate {
+  /** 设备ID */
+  device_id?: string;
+
+  /** 关联场景ID */
+  scene_id?: string;
+
+  /** 目标位置(mm) */
+  target_position?: number;
+
+  /** 运动速度(mm\/s) */
+  speed?: number;
+
+  /** 任务状态 */
+  status?: TaskStatus;
+
+  /** 优先级 */
+  priority?: number;
+
+  /** 错误信息 */
+  error_message?: string;
+
+  /** 开始执行时间 */
+  started_at?: Date;
+
+  /** 完成时间 */
+  completed_at?: Date;
 }
 
 /** OperationMethod */
@@ -820,6 +1542,15 @@ export interface OperationMethod {
   updated_at?: Date;
 }
 
+/** OperationMethodUpdate */
+export interface OperationMethodUpdate {
+  /** 鏋勪欢绫诲埆 */
+  type?: ElementType;
+
+  /** 鎿嶄綔姝ラ鍒楄〃 */
+  operation_steps?: OperationStep[];
+}
+
 /** OperationStep */
 export interface OperationStep {
   /** 操作顺序 */
@@ -835,7 +1566,7 @@ export interface OperationStep {
   operation_type: OperationType;
 }
 
-/** 关联文档（OSS 上传的 PDF） */
+/** 关联文档，通常是 OSS 上传的 PDF */
 export interface RelatedDocument {
   /** 文档名称 */
   name: string;
@@ -850,7 +1581,55 @@ export interface RelatedDocument {
   uploaded_at?: Date;
 }
 
-/** StageElement */
+/** 场景预设模型 */
+export interface Scene {
+  /** 场景名称 */
+  name: string;
+
+  /** 场景描述 */
+  description?: string;
+
+  /** 设备目标列表 */
+  devices?: SceneDeviceItem[];
+
+  /** 预计执行时长(s) */
+  duration?: number;
+
+  /** 创建时间 */
+  created_at?: Date;
+
+  /** 更新时间 */
+  updated_at?: Date;
+}
+
+/** 场景中的设备项 */
+export interface SceneDeviceItem {
+  /** 设备ID */
+  device_id: string;
+
+  /** 目标位置(mm) */
+  target_position: number;
+
+  /** 运动速度(mm\/s) */
+  speed?: number;
+}
+
+/** 更新场景预设 */
+export interface SceneUpdate {
+  /** 场景名称 */
+  name?: string;
+
+  /** 场景描述 */
+  description?: string;
+
+  /** 设备目标列表 */
+  devices?: SceneDeviceItem[];
+
+  /** 预计执行时长(s) */
+  duration?: number;
+}
+
+/** 舞台构件 */
 export interface StageElement {
   /** 构件名称 */
   name: string;
@@ -858,7 +1637,7 @@ export interface StageElement {
   /** 构件Id */
   elementId: number;
 
-  /**  */
+  /** 唯一标识 */
   guid?: string;
 
   /** 编号 */
@@ -872,6 +1651,36 @@ export interface StageElement {
 
   /** 关联的模型文件ID */
   model_file_id: string;
+
+  /** 关联的构件基础信息ID */
+  basic_info_id?: string;
+
+  /** 构件可运动方位及范围 */
+  motion_ranges?: MotionRange[];
+}
+
+/** 更新舞台构件 */
+export interface StageElementUpdate {
+  /** 构件名称 */
+  name?: string;
+
+  /** 构件Id */
+  elementId?: number;
+
+  /** 唯一标识 */
+  guid?: string;
+
+  /** 编号 */
+  code?: string;
+
+  /** 尺寸 */
+  size?: string;
+
+  /** 速度 */
+  speed?: number;
+
+  /** 关联的模型文件ID */
+  model_file_id?: string;
 
   /** 关联的构件基础信息ID */
   basic_info_id?: string;
@@ -972,6 +1781,13 @@ export enum ElementType {
   '观众厅吸声板' = '观众厅吸声板'
 }
 
+export enum MaintenancePeriod {
+  '天' = '天',
+  '周' = '周',
+  '月' = '月',
+  '年' = '年'
+}
+
 export enum ModelFileType {
   'revit' = 'revit',
   'rhino' = 'rhino',
@@ -994,4 +1810,12 @@ export enum OperationType {
   '常规操作' = '常规操作',
   '紧急停止' = '紧急停止',
   '主备切换' = '主备切换'
+}
+
+export enum TaskStatus {
+  'pending' = 'pending',
+  'running' = 'running',
+  'completed' = 'completed',
+  'failed' = 'failed',
+  'cancelled' = 'cancelled'
 }

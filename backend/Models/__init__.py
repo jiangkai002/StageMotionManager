@@ -1,42 +1,52 @@
 """Models 模块"""
 
-from .database import get_database, get_collection, close_database
-from .element import MotionType, MotionRange, StageElement, StageElementCollection
-from .modelFile import ModelFile, ModelFileType, ModelFileCollection
-from .scene import Scene, SceneDeviceItem, SceneCollection
-from .motion_task import MotionTask, TaskStatus, MotionTaskCollection
+from .database import close_database, get_collection, get_database
+from .element import MotionRange, MotionType, StageElement, StageElementCollection, StageElementUpdate
+from .modelFile import ModelFile, ModelFileCollection, ModelFileType, ModelFileUpdate
+from .scene import Scene, SceneCollection, SceneDeviceItem, SceneUpdate
+from .motion_task import MotionTask, MotionTaskCollection, MotionTaskUpdate, TaskStatus
 from .ElementInfo import (
-    ElementType,
-    RelatedDocument,
     ElementBasicInfo,
     ElementBasicInfoCollection,
+    ElementBasicInfoUpdate,
+    ElementType,
+    Frequency,
+    MaintenancePeriod,
+    MaintenanceRequirement,
+    MaintenanceRequirementCollection,
+    MaintenanceRequirementUpdate,
+    RelatedDocument,
 )
 
 __all__ = [
-    # 数据库
     "get_database",
     "get_collection",
     "close_database",
-    # 构件
     "MotionType",
     "MotionRange",
     "StageElement",
+    "StageElementUpdate",
     "StageElementCollection",
-    # 模型文件
     "ModelFile",
     "ModelFileType",
+    "ModelFileUpdate",
     "ModelFileCollection",
-    # 场景
     "Scene",
     "SceneDeviceItem",
+    "SceneUpdate",
     "SceneCollection",
-    # 运动任务
     "MotionTask",
+    "MotionTaskUpdate",
     "TaskStatus",
     "MotionTaskCollection",
-    # 构件基础信息
     "ElementType",
     "RelatedDocument",
     "ElementBasicInfo",
+    "ElementBasicInfoUpdate",
     "ElementBasicInfoCollection",
+    "MaintenancePeriod",
+    "Frequency",
+    "MaintenanceRequirement",
+    "MaintenanceRequirementUpdate",
+    "MaintenanceRequirementCollection",
 ]
