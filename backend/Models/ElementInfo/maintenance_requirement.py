@@ -1,4 +1,4 @@
-"""维保需求模型"""
+"""维保要求模型"""
 
 from datetime import datetime
 from enum import Enum
@@ -26,7 +26,7 @@ class Frequency(BaseModel):
 
 
 class MaintenanceRequirement(BaseModel):
-    """维保需求"""
+    """维保要求"""
 
     name: str = Field(..., description="维保名称", example="升降台月度保养")
     content: str = Field(..., description="维保内容")
@@ -40,7 +40,7 @@ class MaintenanceRequirement(BaseModel):
 
 
 class MaintenanceRequirementUpdate(BaseModel):
-    """更新维保需求"""
+    """更新维保要求"""
 
     name: Optional[str] = Field(None, description="维保名称")
     content: Optional[str] = Field(None, description="维保内容")
@@ -52,7 +52,7 @@ class MaintenanceRequirementUpdate(BaseModel):
 
 
 class MaintenanceRequirementCollection:
-    """维保需求集合操作"""
+    """维保要求集合操作"""
 
     COLLECTION_NAME = "MaintenanceRequirement"
 

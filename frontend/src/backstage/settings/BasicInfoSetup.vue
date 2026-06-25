@@ -13,6 +13,11 @@ import {
 const tableData = ref<ElementBasicInfo[]>([])
 const loading = ref(false)
 
+/** 分页 */
+const currentPage = ref(1)
+const pageSize = ref(20)
+const total = ref(0)
+
 /** 新增/编辑弹窗 */
 const dialogVisible = ref(false)
 const dialogMode = ref<'create' | 'edit'>('create')
@@ -21,7 +26,7 @@ const submitting = ref(false)
 
 /** 表单数据 */
 const form = reactive<{
-  elementId: number | null
+  _id: string
   name: string
   type: ElementType | ''
   specification: string
@@ -30,7 +35,7 @@ const form = reactive<{
   drive_method: string
   function_description: string
 }>({
-  elementId: null,
+  _id: '',
   name: '',
   type: '',
   specification: '',
@@ -61,17 +66,25 @@ onMounted(() => {
 async function loadList() {
   loading.value = true
   try {
+    const skip = (currentPage.value - 1) * pageSize.value
     const data = await ElementBasicInfoService.getBasicInfosApiElementBasicInfoGet({
-      skip: 0,
-      limit: 100,
+      skip,
+      limit: pageSize.value,
     })
     const list = Array.isArray(data) ? data : (data?.items ?? [])
     tableData.value = list
+    total.value = (data as any)?.total ?? list.length
   } catch (error) {
     console.error('加载基础信息列表失败:', error)
   } finally {
     loading.value = false
   }
+}
+
+/** 翻页 */
+function handlePageChange(page: number) {
+  currentPage.value = page
+  loadList()
 }
 
 /** 加载类型选项 */
@@ -86,7 +99,7 @@ async function loadTypes() {
 
 /** 重置表单 */
 function resetForm() {
-  form.elementId = null
+  form._id = ''
   form.name = ''
   form.type = ''
   form.specification = ''
@@ -110,7 +123,7 @@ function handleEdit(row: any) {
   dialogMode.value = 'edit'
   dialogTitle.value = '编辑构件基础信息'
   const info = row as ElementBasicInfo
-  form.elementId = row.elementId ?? row.element_id ?? null
+  form._id = row._id
   form.name = info.name
   form.type = info.type
   form.specification = info.specification ?? ''
@@ -145,8 +158,8 @@ async function handleSubmit() {
         })
         ElMessage.success('创建成功')
       } else {
-        await ElementBasicInfoService.updateBasicInfoApiElementBasicInfoElementIdPut({
-          elementId: Number(form.elementId),
+        await ElementBasicInfoService.updateBasicInfoApiElementBasicInfoIdPut({
+          id: form._id,
           body: payload,
         })
         ElMessage.success('更新成功')
@@ -218,6 +231,16 @@ async function handleDelete(row: any) {
       </el-table-column>
     </el-table>
 
+    <div class="pagination-wrapper">
+      <el-pagination
+        v-model:current-page="currentPage"
+        :page-size="pageSize"
+        :total="total"
+        layout="total, prev, pager, next"
+        @current-change="handlePageChange"
+      />
+    </div>
+
     <!-- 新增/编辑弹窗 -->
     <el-dialog
       v-model="dialogVisible"
@@ -271,5 +294,11 @@ async function handleDelete(row: any) {
 
 .toolbar {
   margin-bottom: 16px;
+}
+
+.pagination-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
 }
 </style>

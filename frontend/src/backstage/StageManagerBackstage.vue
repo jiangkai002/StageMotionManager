@@ -7,6 +7,7 @@ import modelUpload from '@/assets/modelUpload.svg'
 import stageMotion from '@/assets/stageMotion.svg'
 import basicInfo from '@/assets/basicInfo.svg'
 import operationMethod from '@/assets/operationMethod.svg'
+import maintenanceRequirement from '@/assets/maintenanceRequirement.svg'
 
 interface NavigationItem {
   path: string
@@ -43,6 +44,12 @@ const navigationItems: NavigationItem[] = [
     title: '操作方法管理',
     description: '管理各构件操作步骤',
     icon: operationMethod,
+  },
+  {
+    path: '/backstage/settings/maintenance-requirement',
+    title: '维保要求管理',
+    description: '维护设备保养要求',
+    icon: maintenanceRequirement,
   },
 ]
 

@@ -41,7 +41,7 @@ const routes: RouteRecordRaw[] = [
         path: 'settings/element-motion',
         name: 'backstage-element-motion',
         component: () => import('../backstage/settings/ElementMotionParaSetup.vue'),
-        meta: { requiresAuth: true, title: '元素运动配置' },
+        meta: { requiresAuth: true, title: '构件运动参数配置' },
       },
       {
         path: 'settings/basic-info',
@@ -54,6 +54,12 @@ const routes: RouteRecordRaw[] = [
         name: 'backstage-operation-method',
         component: () => import('../backstage/settings/OperationMethodSetup.vue'),
         meta: { requiresAuth: true, title: '操作方法管理' },
+      },
+      {
+        path: 'settings/maintenance-requirement',
+        name: 'backstage-maintenance-requirement',
+        component: () => import('../backstage/settings/MaintenanceRequirementSetup.vue'),
+        meta: { requiresAuth: true, title: '维保要求管理' },
       },
     ],
   },
@@ -76,7 +82,7 @@ router.beforeEach((to) => {
   }
 
   if (to.name === 'login' && userStore.isLoggedIn) {
-    return { name: 'home' }
+    return { name: 'stage-motion' }
   }
 })
 

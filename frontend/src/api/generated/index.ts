@@ -1141,7 +1141,7 @@ export class MotionTasksService {
 
 export class MaintenanceRequirementsService {
   /**
-   * 创建维保需求
+   * 创建维保要求
    */
   static createRequirementApiMaintenanceRequirementsPost(
     params: {
@@ -1163,7 +1163,7 @@ export class MaintenanceRequirementsService {
     });
   }
   /**
-   * 查询所有维保需求
+   * 查询所有维保要求
    */
   static getRequirementsApiMaintenanceRequirementsGet(
     params: {
@@ -1186,7 +1186,7 @@ export class MaintenanceRequirementsService {
     });
   }
   /**
-   * 批量创建
+   * 批量创建维保要求
    */
   static createRequirementsApiMaintenanceRequirementsBatchPost(
     params: {
@@ -1220,7 +1220,7 @@ export class MaintenanceRequirementsService {
     });
   }
   /**
-   * 根据 ID 查询维保需求
+   * 根据 ID 查询维保要求
    */
   static getRequirementApiMaintenanceRequirementsDocIdGet(
     params: {
@@ -1239,7 +1239,7 @@ export class MaintenanceRequirementsService {
     });
   }
   /**
-   * 更新维保需求
+   * 更新维保要求
    */
   static updateRequirementApiMaintenanceRequirementsDocIdPut(
     params: {
@@ -1264,7 +1264,7 @@ export class MaintenanceRequirementsService {
     });
   }
   /**
-   * 删除维保需求
+   * 删除维保要求
    */
   static deleteRequirementApiMaintenanceRequirementsDocIdDelete(
     params: {
@@ -1359,7 +1359,7 @@ export interface HTTPValidationError {
   detail?: ValidationError[];
 }
 
-/** 维保需求 */
+/** 维保要求 */
 export interface MaintenanceRequirement {
   /** 维保名称 */
   name: string;
@@ -1380,7 +1380,7 @@ export interface MaintenanceRequirement {
   updated_at?: Date;
 }
 
-/** 更新维保需求 */
+/** 更新维保要求 */
 export interface MaintenanceRequirementUpdate {
   /** 维保名称 */
   name?: string;

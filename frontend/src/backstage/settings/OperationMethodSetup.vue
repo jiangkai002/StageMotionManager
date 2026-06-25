@@ -356,13 +356,6 @@ function formatDate(value?: Date | string) {
   <div class="operation-method-setup" v-loading="loading">
     <section class="command-bar">
       <div class="toolbar">
-        <el-input
-          v-model="keyword"
-          class="search-input"
-          clearable
-          placeholder="搜索构件、步骤或操作类型"
-          :prefix-icon="Search"
-        />
         <el-button :icon="Refresh" @click="loadMethods">刷新</el-button>
         <el-button type="primary" :icon="Plus" @click="openCreateMethodDialog">
           新增操作方法
