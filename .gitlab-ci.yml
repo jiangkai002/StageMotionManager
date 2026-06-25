@@ -1,0 +1,25 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+docker-build:
+  # Official docker image.
+  image: docker:19.03.5
+  stage: build
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  script:
+    - TAG=$(echo "$CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_BRANCH" | tr '[:upper:]' '[:lower:]')
+    - docker build -t "$TAG" .
+    - docker push "$TAG"
+
+  only:
+    - master
+    - deploy
+  tags:
+    - share
