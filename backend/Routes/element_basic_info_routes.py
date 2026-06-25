@@ -3,11 +3,11 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import Optional
 
-from Models.ElementInfo.ElementBasicInfo import (
+from Models.ElementInfo.elementBasicInfo import (
     ElementBasicInfo,
     RelatedDocument,
 )
-from Models.ElementInfo.ElementType import ElementType
+from Models.ElementInfo.elementType import ElementType
 from Services import ElementBasicInfoService
 from Services.auth_service import verify_token
 

@@ -5,7 +5,7 @@ from typing import Optional
 
 from bson import ObjectId
 
-from Models.ElementInfo.ElementBasicInfo import (
+from Models.ElementInfo.elementBasicInfo import (
     ElementBasicInfo,
     ElementBasicInfoCollection,
 )

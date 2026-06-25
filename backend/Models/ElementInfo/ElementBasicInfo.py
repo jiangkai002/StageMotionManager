@@ -5,7 +5,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
-from Models.ElementInfo.ElementType import ElementType
+from .elementType import ElementType
 
 
 class RelatedDocument(BaseModel):
@@ -19,6 +19,7 @@ class RelatedDocument(BaseModel):
 
 class ElementBasicInfo(BaseModel):
     """构件基础信息"""
+
     name: str = Field(..., description="构件名称", example="主舞台升降台")
     type: ElementType = Field(..., description="构件类型")
     specification: str = Field(default="", description="规格", example="4m×2m")
@@ -52,4 +53,4 @@ class ElementBasicInfoCollection:
         """创建索引"""
         collection = cls.get_collection()
         collection.create_index("element_id", unique=True)
-        collection.create_index("type") 
+        collection.create_index("type")

@@ -349,6 +349,411 @@ export class ModelFilesService {
   }
 }
 
+export class ElementBasicInfoService {
+  /**
+   * 创建构件基础信息
+   */
+  static createBasicInfoApiElementBasicInfoPost(
+    params: {
+      /** requestBody */
+      body?: ElementBasicInfo;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/element-basic-info';
+
+      const configs: IRequestConfig = getConfigs('post', 'application/json', url, options);
+
+      let data = params.body;
+
+      configs.data = data;
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 查询所有构件基础信息
+   */
+  static getBasicInfosApiElementBasicInfoGet(
+    params: {
+      /**  */
+      skip?: number;
+      /**  */
+      limit?: number;
+      /** 按类型筛选 */
+      type?: ElementType;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/element-basic-info';
+
+      const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
+      configs.params = { skip: params['skip'], limit: params['limit'], type: params['type'] };
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 批量创建
+   */
+  static createBasicInfosApiElementBasicInfoBatchPost(
+    params: {
+      /** requestBody */
+      body?: ElementBasicInfo[];
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/element-basic-info/batch';
+
+      const configs: IRequestConfig = getConfigs('post', 'application/json', url, options);
+
+      let data = params.body;
+
+      configs.data = data;
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 获取所有构件类型
+   */
+  static getTypesApiElementBasicInfoTypesGet(options: IRequestOptions = {}): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/element-basic-info/types';
+
+      const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 根据 elementId 查询
+   */
+  static getBasicInfoApiElementBasicInfoElementIdGet(
+    params: {
+      /**  */
+      elementId: number;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/element-basic-info/{element_id}';
+      url = url.replace('{element_id}', params['elementId'] + '');
+
+      const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 更新构件基础信息
+   */
+  static updateBasicInfoApiElementBasicInfoElementIdPut(
+    params: {
+      /**  */
+      elementId: number;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/element-basic-info/{element_id}';
+      url = url.replace('{element_id}', params['elementId'] + '');
+
+      const configs: IRequestConfig = getConfigs('put', 'application/json', url, options);
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 删除构件基础信息
+   */
+  static deleteBasicInfoApiElementBasicInfoElementIdDelete(
+    params: {
+      /**  */
+      elementId: number;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/element-basic-info/{element_id}';
+      url = url.replace('{element_id}', params['elementId'] + '');
+
+      const configs: IRequestConfig = getConfigs('delete', 'application/json', url, options);
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 追加关联文档
+   */
+  static addRelatedDocumentApiElementBasicInfoElementIdDocumentsPost(
+    params: {
+      /**  */
+      elementId: number;
+      /** requestBody */
+      body?: RelatedDocument;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/element-basic-info/{element_id}/documents';
+      url = url.replace('{element_id}', params['elementId'] + '');
+
+      const configs: IRequestConfig = getConfigs('post', 'application/json', url, options);
+
+      let data = params.body;
+
+      configs.data = data;
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 移除关联文档
+   */
+  static removeRelatedDocumentApiElementBasicInfoElementIdDocumentsDelete(
+    params: {
+      /**  */
+      elementId: number;
+      /**  */
+      ossPath: string;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/element-basic-info/{element_id}/documents';
+      url = url.replace('{element_id}', params['elementId'] + '');
+
+      const configs: IRequestConfig = getConfigs('delete', 'application/json', url, options);
+      configs.params = { oss_path: params['ossPath'] };
+
+      axios(configs, resolve, reject);
+    });
+  }
+}
+
+export class OperationMethodService {
+  /**
+   * 创建操作方法
+   */
+  static createOperationMethodApiOperationMethodPost(
+    params: {
+      /** requestBody */
+      body?: OperationMethod;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/operation-method';
+
+      const configs: IRequestConfig = getConfigs('post', 'application/json', url, options);
+
+      let data = params.body;
+
+      configs.data = data;
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 查询所有操作方法
+   */
+  static getOperationMethodsApiOperationMethodGet(
+    params: {
+      /**  */
+      skip?: number;
+      /**  */
+      limit?: number;
+      /** 按构件类型筛选 */
+      type?: ElementType;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/operation-method';
+
+      const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
+      configs.params = { skip: params['skip'], limit: params['limit'], type: params['type'] };
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 批量创建
+   */
+  static createOperationMethodsApiOperationMethodBatchPost(
+    params: {
+      /** requestBody */
+      body?: OperationMethod[];
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/operation-method/batch';
+
+      const configs: IRequestConfig = getConfigs('post', 'application/json', url, options);
+
+      let data = params.body;
+
+      configs.data = data;
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 获取所有操作类型
+   */
+  static getOperationTypesApiOperationMethodTypesGet(options: IRequestOptions = {}): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/operation-method/types';
+
+      const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 根据构件类型查询
+   */
+  static getOperationMethodApiOperationMethodTypeGet(
+    params: {
+      /**  */
+      type: ElementType;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/operation-method/{type}';
+      url = url.replace('{type}', params['type'] + '');
+
+      const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 更新操作方法
+   */
+  static updateOperationMethodApiOperationMethodTypePut(
+    params: {
+      /**  */
+      type: ElementType;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/operation-method/{type}';
+      url = url.replace('{type}', params['type'] + '');
+
+      const configs: IRequestConfig = getConfigs('put', 'application/json', url, options);
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 删除操作方法
+   */
+  static deleteOperationMethodApiOperationMethodTypeDelete(
+    params: {
+      /**  */
+      type: ElementType;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/operation-method/{type}';
+      url = url.replace('{type}', params['type'] + '');
+
+      const configs: IRequestConfig = getConfigs('delete', 'application/json', url, options);
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 追加操作步骤
+   */
+  static addOperationStepApiOperationMethodTypeStepsPost(
+    params: {
+      /**  */
+      type: ElementType;
+      /** requestBody */
+      body?: OperationStep;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/operation-method/{type}/steps';
+      url = url.replace('{type}', params['type'] + '');
+
+      const configs: IRequestConfig = getConfigs('post', 'application/json', url, options);
+
+      let data = params.body;
+
+      configs.data = data;
+
+      axios(configs, resolve, reject);
+    });
+  }
+  /**
+   * 移除操作步骤
+   */
+  static removeOperationStepApiOperationMethodTypeStepsDelete(
+    params: {
+      /**  */
+      type: ElementType;
+      /** 操作步骤序号 */
+      index: number;
+    } = {} as any,
+    options: IRequestOptions = {}
+  ): Promise<any | null> {
+    return new Promise((resolve, reject) => {
+      let url = basePath + '/api/operation-method/{type}/steps';
+      url = url.replace('{type}', params['type'] + '');
+
+      const configs: IRequestConfig = getConfigs('delete', 'application/json', url, options);
+      configs.params = { index: params['index'] };
+
+      axios(configs, resolve, reject);
+    });
+  }
+}
+
+/** 构件基础信息 */
+export interface ElementBasicInfo {
+  /** 构件名称 */
+  name: string;
+
+  /**  */
+  type: ElementType;
+
+  /** 规格 */
+  specification?: string;
+
+  /** 供应商 */
+  supplier?: string;
+
+  /** 额定荷载 */
+  rated_load?: string;
+
+  /** 驱动方式 */
+  drive_method?: string;
+
+  /** 功能说明 */
+  function_description?: string;
+
+  /** 关联文档(OSS上传的PDF) */
+  related_documents?: RelatedDocument[];
+
+  /** 创建时间 */
+  created_at?: Date;
+
+  /** 更新时间 */
+  updated_at?: Date;
+}
+
 /** HTTPValidationError */
 export interface HTTPValidationError {
   /**  */
@@ -364,7 +769,7 @@ export interface ModelFile {
   file_type: ModelFileType;
 
   /** 模型类型 */
-  type: string;
+  c: string;
 
   /** 属于哪个厅 */
   room: string;
@@ -373,10 +778,10 @@ export interface ModelFile {
   file_path: string;
 
   /** 文件大小(字节) */
-  file_size?: any | null;
+  file_size?: number;
 
   /** 文件描述 */
-  description?: any | null;
+  description?: string;
 
   /** 创建时间 */
   created_at?: Date;
@@ -400,6 +805,51 @@ export interface MotionRange {
   unit?: string;
 }
 
+/** OperationMethod */
+export interface OperationMethod {
+  /** 构件类别 */
+  type: ElementType;
+
+  /** 操作步骤列表 */
+  operation_steps?: OperationStep[];
+
+  /** 创建时间 */
+  created_at?: Date;
+
+  /** 更新时间 */
+  updated_at?: Date;
+}
+
+/** OperationStep */
+export interface OperationStep {
+  /** 操作顺序 */
+  index: number;
+
+  /** 操作名称 */
+  step_name: string;
+
+  /** 具体操作细节 */
+  operation_detail?: string;
+
+  /** 操作类型 */
+  operation_type: OperationType;
+}
+
+/** 关联文档（OSS 上传的 PDF） */
+export interface RelatedDocument {
+  /** 文档名称 */
+  name: string;
+
+  /** OSS 存储路径 */
+  oss_path: string;
+
+  /** 文件大小(字节) */
+  file_size?: number;
+
+  /** 上传时间 */
+  uploaded_at?: Date;
+}
+
 /** StageElement */
 export interface StageElement {
   /** 构件名称 */
@@ -411,6 +861,9 @@ export interface StageElement {
   /**  */
   guid?: string;
 
+  /** 编号 */
+  code?: string;
+
   /** 尺寸 */
   size?: string;
 
@@ -419,6 +872,9 @@ export interface StageElement {
 
   /** 关联的模型文件ID */
   model_file_id: string;
+
+  /** 关联的构件基础信息ID */
+  basic_info_id?: string;
 
   /** 构件可运动方位及范围 */
   motion_ranges?: MotionRange[];
@@ -442,6 +898,80 @@ export interface ValidationError {
   ctx?: object;
 }
 
+export enum ElementType {
+  '舞台升降机' = '舞台升降机',
+  '车台系统' = '车台系统',
+  '车台驱动系统' = '车台驱动系统',
+  '过渡升降机 - 侧舞台' = '过渡升降机 - 侧舞台',
+  '过渡升降机 - 后舞台' = '过渡升降机 - 后舞台',
+  '过渡升降机 - 上舞台右侧' = '过渡升降机 - 上舞台右侧',
+  '过渡升降机 - 上舞台左侧' = '过渡升降机 - 上舞台左侧',
+  '演员升降小车' = '演员升降小车',
+  '后舞台转台车台' = '后舞台转台车台',
+  '芭蕾车台（含填充车台）' = '芭蕾车台（含填充车台）',
+  '演出平台系统' = '演出平台系统',
+  '乐池升降机' = '乐池升降机',
+  '乐池护栏' = '乐池护栏',
+  '乐池座椅车台' = '乐池座椅车台',
+  '乐池保护网' = '乐池保护网',
+  '侧舞台补偿升降机' = '侧舞台补偿升降机',
+  '后舞台补偿升降机' = '后舞台补偿升降机',
+  '台口安全幕' = '台口安全幕',
+  '大幕吊杆 / 大幕机' = '大幕吊杆 / 大幕机',
+  '活动灯光桥系统' = '活动灯光桥系统',
+  '活动灯光架' = '活动灯光架',
+  '电动吊杆' = '电动吊杆',
+  '活动灯光渡桥' = '活动灯光渡桥',
+  '卷线器' = '卷线器',
+  '单点吊机系统' = '单点吊机系统',
+  '侧光梁' = '侧光梁',
+  '链式吊机系统' = '链式吊机系统',
+  '芭蕾车台吊机' = '芭蕾车台吊机',
+  '固定和活动幕布轨道' = '固定和活动幕布轨道',
+  '舞台前部桁架系统' = '舞台前部桁架系统',
+  '舞台前部链式吊机' = '舞台前部链式吊机',
+  '扬声器组吊机' = '扬声器组吊机',
+  '字幕屏吊机' = '字幕屏吊机',
+  '横跨舞台链式吊机系统 - 辅助舞台' = '横跨舞台链式吊机系统 - 辅助舞台',
+  '后舞台门' = '后舞台门',
+  '侧舞台门' = '侧舞台门',
+  '上舞台左隔声门' = '上舞台左隔声门',
+  '上舞台右隔声门' = '上舞台右隔声门',
+  '卸货区门' = '卸货区门',
+  '后舞台通道门' = '后舞台通道门',
+  '后舞台通道门 - 右侧' = '后舞台通道门 - 右侧',
+  '后舞台通道门 - 左侧' = '后舞台通道门 - 左侧',
+  '后舞台电动吊杆' = '后舞台电动吊杆',
+  '演出控制系统' = '演出控制系统',
+  '乐池升降机控制系统' = '乐池升降机控制系统',
+  '链式吊机控制系统' = '链式吊机控制系统',
+  '侧舞台链式吊机控制系统' = '侧舞台链式吊机控制系统',
+  '后舞台吊机控制系统' = '后舞台吊机控制系统',
+  '反声罩' = '反声罩',
+  '调音台升降机' = '调音台升降机',
+  '调音台升降机车台' = '调音台升降机车台',
+  '幕布和遮盖物' = '幕布和遮盖物',
+  '接入和处理设备' = '接入和处理设备',
+  '悬吊附件' = '悬吊附件',
+  '备件' = '备件',
+  '舞台地板' = '舞台地板',
+  '观众厅可变声学' = '观众厅可变声学',
+  '排练厅吊杆系统' = '排练厅吊杆系统',
+  '活动坐席单元' = '活动坐席单元',
+  '安装次级布线' = '安装次级布线',
+  '运输升降机' = '运输升降机',
+  '座椅提升升降机' = '座椅提升升降机',
+  '座椅车台系统' = '座椅车台系统',
+  '可移动楼座单元' = '可移动楼座单元',
+  '横向链式吊机系统' = '横向链式吊机系统',
+  '桁架系统' = '桁架系统',
+  '轨道梁' = '轨道梁',
+  '台下设备控制系统' = '台下设备控制系统',
+  '台上设备控制式系统' = '台上设备控制式系统',
+  '观众厅吸声幕' = '观众厅吸声幕',
+  '观众厅吸声板' = '观众厅吸声板'
+}
+
 export enum ModelFileType {
   'revit' = 'revit',
   'rhino' = 'rhino',
@@ -458,4 +988,10 @@ export enum MotionType {
   'rotation_x' = 'rotation_x',
   'rotation_y' = 'rotation_y',
   'rotation_z' = 'rotation_z'
+}
+
+export enum OperationType {
+  '常规操作' = '常规操作',
+  '紧急停止' = '紧急停止',
+  '主备切换' = '主备切换'
 }

@@ -46,7 +46,33 @@ async function loadOpenApiDocument(openApiUrl) {
     document.openapi = '3.0.3'
   }
 
+  normalizeNullableSchemas(document)
+
   return document
+}
+
+function normalizeNullableSchemas(value) {
+  if (!value || typeof value !== 'object') return
+
+  if (Array.isArray(value)) {
+    value.forEach(normalizeNullableSchemas)
+    return
+  }
+
+  if (Array.isArray(value.anyOf)) {
+    const nonNullSchemas = value.anyOf.filter((schema) => schema?.type !== 'null')
+    const hasNullSchema = nonNullSchemas.length !== value.anyOf.length
+
+    if (hasNullSchema && nonNullSchemas.length === 1) {
+      const [schema] = nonNullSchemas
+      delete value.anyOf
+      Object.assign(value, schema, { nullable: true })
+    }
+  }
+
+  for (const child of Object.values(value)) {
+    normalizeNullableSchemas(child)
+  }
 }
 
 function writeEmptyClient() {
@@ -81,7 +107,7 @@ async function main() {
   try {
     const source = await loadOpenApiDocument(openApiUrl)
 
-    codegen({
+    await codegen({
       source,
       outputDir: OUTPUT_DIR,
       fileName: 'index.ts',
