@@ -2,8 +2,12 @@
 import { onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Delete, Edit, Plus } from '@element-plus/icons-vue'
-import { ElementBasicInfoService, type ElementBasicInfo, type ElementType } from '@/api'
-import { apiClient } from '@/api'
+import {
+  ElementBasicInfoService,
+  type ElementBasicInfo,
+  type ElementBasicInfoUpdate,
+  type ElementType,
+} from '@/api'
 
 /** 表格数据 */
 const tableData = ref<ElementBasicInfo[]>([])
@@ -124,7 +128,7 @@ async function handleSubmit() {
     if (!valid) return
 
     submitting.value = true
-    const payload: ElementBasicInfo = {
+    const payload: ElementBasicInfo | ElementBasicInfoUpdate = {
       name: form.name,
       type: form.type as ElementType,
       specification: form.specification || undefined,
@@ -136,11 +140,15 @@ async function handleSubmit() {
 
     try {
       if (dialogMode.value === 'create') {
-        await ElementBasicInfoService.createBasicInfoApiElementBasicInfoPost({ body: payload })
+        await ElementBasicInfoService.createBasicInfoApiElementBasicInfoPost({
+          body: payload as ElementBasicInfo,
+        })
         ElMessage.success('创建成功')
       } else {
-        // 生成的 API 客户端缺少 body 参数，直接用 apiClient 调用
-        await apiClient.put(`/api/element-basic-info/${form.elementId}`, payload)
+        await ElementBasicInfoService.updateBasicInfoApiElementBasicInfoElementIdPut({
+          elementId: Number(form.elementId),
+          body: payload,
+        })
         ElMessage.success('更新成功')
       }
       dialogVisible.value = false
@@ -156,15 +164,15 @@ async function handleSubmit() {
 
 /** 删除 */
 async function handleDelete(row: any) {
-  const elementId = row.elementId ?? row.element_id
-  if (!elementId) return
+  const id = row._id
+  if (!id) return
 
   try {
     await ElMessageBox.confirm(`确定删除「${row.name}」吗？`, '提示', {
       type: 'warning',
     })
-    await ElementBasicInfoService.deleteBasicInfoApiElementBasicInfoElementIdDelete({
-      elementId,
+    await ElementBasicInfoService.deleteBasicInfoApiElementBasicInfoIdDelete({
+      id,
     })
     ElMessage.success('删除成功')
     await loadList()

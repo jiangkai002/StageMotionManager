@@ -45,12 +45,6 @@ class ElementBasicInfoService:
         return serialize_doc(doc)
 
     @classmethod
-    async def get_by_element_id(cls, element_id: int) -> Optional[dict]:
-        """根据 element_id 查询"""
-        doc = await cls.collection.find_one({"element_id": element_id})
-        return serialize_doc(doc)
-
-    @classmethod
     async def get_all(
         cls,
         skip: int = 0,
@@ -78,22 +72,10 @@ class ElementBasicInfoService:
         return result.modified_count
 
     @classmethod
-    async def update_by_element_id(cls, element_id: int, update_data: dict) -> int:
-        """根据 element_id 更新"""
-        update_data["updated_at"] = datetime.now()
-        result = await cls.collection.update_one(
-            {"element_id": element_id},
-            {"$set": update_data},
-        )
-        return result.modified_count
-
-    @classmethod
-    async def add_related_document(
-        cls, element_id: int, document: dict
-    ) -> int:
+    async def add_related_document(cls, doc_id: str, document: dict) -> int:
         """为构件追加一个关联文档"""
         result = await cls.collection.update_one(
-            {"element_id": element_id},
+            {"_id": ObjectId(doc_id)},
             {
                 "$push": {"related_documents": document},
                 "$set": {"updated_at": datetime.now()},
@@ -102,12 +84,10 @@ class ElementBasicInfoService:
         return result.modified_count
 
     @classmethod
-    async def remove_related_document(
-        cls, element_id: int, oss_path: str
-    ) -> int:
+    async def remove_related_document(cls, doc_id: str, oss_path: str) -> int:
         """移除指定关联文档"""
         result = await cls.collection.update_one(
-            {"element_id": element_id},
+            {"_id": ObjectId(doc_id)},
             {
                 "$pull": {"related_documents": {"oss_path": oss_path}},
                 "$set": {"updated_at": datetime.now()},
@@ -121,10 +101,4 @@ class ElementBasicInfoService:
     async def delete_by_id(cls, doc_id: str) -> int:
         """根据 _id 删除"""
         result = await cls.collection.delete_one({"_id": ObjectId(doc_id)})
-        return result.deleted_count
-
-    @classmethod
-    async def delete_by_element_id(cls, element_id: int) -> int:
-        """根据 element_id 删除"""
-        result = await cls.collection.delete_one({"element_id": element_id})
         return result.deleted_count

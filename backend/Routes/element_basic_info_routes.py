@@ -23,7 +23,9 @@ async def create_basic_info(info: ElementBasicInfo):
     return {"id": doc_id}
 
 
-@router.post("/batch", summary="批量创建构件基础信息", dependencies=[Depends(verify_token)])
+@router.post(
+    "/batch", summary="批量创建构件基础信息", dependencies=[Depends(verify_token)]
+)
 async def create_basic_infos(infos: list[ElementBasicInfo]):
     """批量创建构件基础信息"""
     doc_ids = await ElementBasicInfoService.create_many(infos)
@@ -48,46 +50,52 @@ async def get_types():
     return [{"label": t.value, "value": t.value} for t in ElementType]
 
 
-@router.get("/{element_id}", summary="根据 elementId 查询", dependencies=[Depends(verify_token)])
-async def get_basic_info(element_id: int):
-    """根据 element_id 查询单条构件基础信息"""
-    info = await ElementBasicInfoService.get_by_element_id(element_id)
+@router.get(
+    "/{id}", summary="根据 ID 查询", dependencies=[Depends(verify_token)]
+)
+async def get_basic_info(id: str):
+    """根据 _id 查询单条构件基础信息"""
+    info = await ElementBasicInfoService.get_by_id(id)
     if not info:
         raise HTTPException(status_code=404, detail="构件基础信息不存在")
     return info
 
 
-@router.put("/{element_id}", summary="更新构件基础信息", dependencies=[Depends(verify_token)])
-async def update_basic_info(element_id: int, update_data: ElementBasicInfoUpdate):
-    """根据 element_id 更新构件基础信息"""
+@router.put(
+    "/{id}", summary="更新构件基础信息", dependencies=[Depends(verify_token)]
+)
+async def update_basic_info(id: str, update_data: ElementBasicInfoUpdate):
+    """根据 _id 更新构件基础信息"""
     update_doc = update_data.model_dump(exclude_unset=True)
     if not update_doc:
         raise HTTPException(status_code=400, detail="没有可更新的字段")
 
-    count = await ElementBasicInfoService.update_by_element_id(element_id, update_doc)
+    count = await ElementBasicInfoService.update_by_id(id, update_doc)
     if count == 0:
         raise HTTPException(status_code=404, detail="构件不存在或没有变化")
     return {"updated": count}
 
 
-@router.delete("/{element_id}", summary="删除构件基础信息", dependencies=[Depends(verify_token)])
-async def delete_basic_info(element_id: int):
-    """根据 element_id 删除构件基础信息"""
-    count = await ElementBasicInfoService.delete_by_element_id(element_id)
+@router.delete(
+    "/{id}", summary="删除构件基础信息", dependencies=[Depends(verify_token)]
+)
+async def delete_basic_info(id: str):
+    """根据 _id 删除构件基础信息"""
+    count = await ElementBasicInfoService.delete_by_id(id)
     if count == 0:
         raise HTTPException(status_code=404, detail="构件不存在")
     return {"deleted": count}
 
 
 @router.post(
-    "/{element_id}/documents",
+    "/{id}/documents",
     summary="追加关联文档",
     dependencies=[Depends(verify_token)],
 )
-async def add_related_document(element_id: int, document: RelatedDocument):
+async def add_related_document(id: str, document: RelatedDocument):
     """为指定构件追加一个关联文档"""
     count = await ElementBasicInfoService.add_related_document(
-        element_id, document.model_dump()
+        id, document.model_dump()
     )
     if count == 0:
         raise HTTPException(status_code=404, detail="构件不存在")
@@ -95,13 +103,13 @@ async def add_related_document(element_id: int, document: RelatedDocument):
 
 
 @router.delete(
-    "/{element_id}/documents",
+    "/{id}/documents",
     summary="移除关联文档",
     dependencies=[Depends(verify_token)],
 )
-async def remove_related_document(element_id: int, oss_path: str = Query(...)):
+async def remove_related_document(id: str, oss_path: str = Query(...)):
     """根据 oss_path 移除指定关联文档"""
-    count = await ElementBasicInfoService.remove_related_document(element_id, oss_path)
+    count = await ElementBasicInfoService.remove_related_document(id, oss_path)
     if count == 0:
         raise HTTPException(status_code=404, detail="构件或文档不存在")
     return {"removed": count}

@@ -2,7 +2,14 @@
 import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Aim, ArrowLeft, Edit, Refresh, Search, View } from '@element-plus/icons-vue'
-import { apiClient, MotionType, type MotionRange } from '@/api'
+import {
+  ElementsService,
+  ModelFilesService,
+  MotionType,
+  type MotionRange,
+  type StageElement,
+  type StageElementUpdate,
+} from '@/api'
 import ModelViewer from '@/components/ModelViewer.vue'
 import type { StageMotionTrack } from '@/models/StageMotionTrack'
 import type { SceneElementInfo } from '@/scenes/ModelScene'
@@ -217,7 +224,7 @@ onMounted(() => {
 async function loadModelFiles() {
   isLoadingModels.value = true
   try {
-    const { data } = await apiClient.get('/model-files', { params: { skip: 0, limit: 500 } })
+    const data = await ModelFilesService.getModelFilesApiModelFilesGet({ skip: 0, limit: 500 })
     const list = Array.isArray(data) ? data : (data?.items ?? [])
     modelFiles.value = list.map((item: any) => ({
       id: String(item.id ?? item._id ?? ''),
@@ -239,7 +246,7 @@ async function loadModelFiles() {
 async function loadBackendElements(modelId: string) {
   isLoadingElements.value = true
   try {
-    const { data } = await apiClient.get('/elements', { params: { skip: 0, limit: 2000 } })
+    const data = await ElementsService.getElementsApiElementsGet({ skip: 0, limit: 2000 })
     const list = Array.isArray(data) ? data : (data?.items ?? [])
     backendElements.value = list
       .filter((item: any) => String(item.model_file_id ?? '') === modelId)
@@ -449,9 +456,14 @@ async function saveElementMotionRanges() {
   }
 
   const elementIdValue = Number(selectedElement.value.elementId)
-  const payload = {
+  if (!Number.isFinite(elementIdValue)) {
+    ElMessage.warning('当前构件 ID 不是有效数字，无法保存到后端')
+    return
+  }
+
+  const payload: StageElement | StageElementUpdate = {
     name: selectedElement.value.name || selectedElement.value.meshName,
-    elementId: Number.isFinite(elementIdValue) ? elementIdValue : selectedElement.value.elementId,
+    elementId: elementIdValue,
     guid: selectedElement.value.guid,
     model_file_id: selectedModel.value.id,
     motion_ranges: buildMotionRanges(),
@@ -464,12 +476,14 @@ async function saveElementMotionRanges() {
     )
 
     if (exists) {
-      await apiClient.put(
-        `/elements/${encodeURIComponent(selectedElement.value.elementId)}`,
-        payload,
-      )
+      await ElementsService.updateElementApiElementsElementIdPut({
+        elementId: elementIdValue,
+        body: payload,
+      })
     } else {
-      await apiClient.post('/elements', payload)
+      await ElementsService.createElementApiElementsPost({
+        body: payload as StageElement,
+      })
     }
 
     await loadBackendElements(selectedModel.value.id)

@@ -4,7 +4,7 @@ import { ElMessage } from 'element-plus'
 import { Delete, UploadFilled, View, Edit } from '@element-plus/icons-vue'
 import OSS from 'ali-oss'
 import { OssInfoDecryptor } from '@/utils/frontend-decryption'
-import { apiClient, ModelFileType } from '@/api'
+import { apiClient, ModelFilesService, ModelFileType, type ModelFile } from '@/api'
 import ModelViewer from '@/components/ModelViewer.vue'
 
 /** 单个上传任务状态 */
@@ -78,7 +78,7 @@ onMounted(async () => {
 /** 初始化 OSS 客户端 */
 async function initOssClient() {
   try {
-    const { data } = await apiClient.get('/auth/ossinfo')
+    const { data } = await apiClient.get('/api/auth/ossinfo')
     const info = OssInfoDecryptor.decryptOssInfoForHttp(
       data.stsToken,
       data.accessKeyId,
@@ -100,7 +100,7 @@ async function initOssClient() {
 /** 从后端加载已上传模型列表 */
 async function loadUploadedModels() {
   try {
-    const { data } = await apiClient.get('/model-files', { params: { skip: 0, limit: 100 } })
+    const data = await ModelFilesService.getModelFilesApiModelFilesGet({ skip: 0, limit: 100 })
     const list = Array.isArray(data) ? data : (data?.items ?? [])
     uploadedModels.value = list.map((item: any) => ({
       id: item.id ?? item._id ?? '',
@@ -193,7 +193,7 @@ async function confirmUpload() {
     return
   }
 
-  const modelFiles = successTasks.map((task) => ({
+  const modelFiles: ModelFile[] = successTasks.map((task) => ({
     name: task.name,
     file_type: ModelFileType.gltf,
     type: defaultModelType,
@@ -204,7 +204,7 @@ async function confirmUpload() {
   }))
 
   try {
-    await apiClient.post('/model-files/batch', modelFiles)
+    await ModelFilesService.createModelFilesApiModelFilesBatchPost({ body: modelFiles })
 
     // 添加到已上传列表
     for (const task of successTasks) {
@@ -305,9 +305,12 @@ async function saveModelSettings() {
   isSavingModelSettings.value = true
 
   try {
-    await apiClient.put(`/model-files/${editingModel.value.id}`, {
-      room: editForm.room,
-      type: editForm.type,
+    await ModelFilesService.updateModelFileApiModelFilesFileIdPut({
+      fileId: editingModel.value.id,
+      body: {
+        room: editForm.room,
+        type: editForm.type,
+      },
     })
 
     const nextModel = {

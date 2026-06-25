@@ -442,18 +442,18 @@ export class ElementBasicInfoService {
     });
   }
   /**
-   * 根据 elementId 查询
+   * 根据 ID 查询
    */
-  static getBasicInfoApiElementBasicInfoElementIdGet(
+  static getBasicInfoApiElementBasicInfoIdGet(
     params: {
       /**  */
-      elementId: number;
+      id: string;
     } = {} as any,
     options: IRequestOptions = {}
   ): Promise<any | null> {
     return new Promise((resolve, reject) => {
-      let url = basePath + '/api/element-basic-info/{element_id}';
-      url = url.replace('{element_id}', params['elementId'] + '');
+      let url = basePath + '/api/element-basic-info/{id}';
+      url = url.replace('{id}', params['id'] + '');
 
       const configs: IRequestConfig = getConfigs('get', 'application/json', url, options);
 
@@ -463,18 +463,18 @@ export class ElementBasicInfoService {
   /**
    * 更新构件基础信息
    */
-  static updateBasicInfoApiElementBasicInfoElementIdPut(
+  static updateBasicInfoApiElementBasicInfoIdPut(
     params: {
       /**  */
-      elementId: number;
+      id: string;
       /** requestBody */
       body?: ElementBasicInfoUpdate;
     } = {} as any,
     options: IRequestOptions = {}
   ): Promise<any | null> {
     return new Promise((resolve, reject) => {
-      let url = basePath + '/api/element-basic-info/{element_id}';
-      url = url.replace('{element_id}', params['elementId'] + '');
+      let url = basePath + '/api/element-basic-info/{id}';
+      url = url.replace('{id}', params['id'] + '');
 
       const configs: IRequestConfig = getConfigs('put', 'application/json', url, options);
 
@@ -488,16 +488,16 @@ export class ElementBasicInfoService {
   /**
    * 删除构件基础信息
    */
-  static deleteBasicInfoApiElementBasicInfoElementIdDelete(
+  static deleteBasicInfoApiElementBasicInfoIdDelete(
     params: {
       /**  */
-      elementId: number;
+      id: string;
     } = {} as any,
     options: IRequestOptions = {}
   ): Promise<any | null> {
     return new Promise((resolve, reject) => {
-      let url = basePath + '/api/element-basic-info/{element_id}';
-      url = url.replace('{element_id}', params['elementId'] + '');
+      let url = basePath + '/api/element-basic-info/{id}';
+      url = url.replace('{id}', params['id'] + '');
 
       const configs: IRequestConfig = getConfigs('delete', 'application/json', url, options);
 
@@ -507,18 +507,18 @@ export class ElementBasicInfoService {
   /**
    * 追加关联文档
    */
-  static addRelatedDocumentApiElementBasicInfoElementIdDocumentsPost(
+  static addRelatedDocumentApiElementBasicInfoIdDocumentsPost(
     params: {
       /**  */
-      elementId: number;
+      id: string;
       /** requestBody */
       body?: RelatedDocument;
     } = {} as any,
     options: IRequestOptions = {}
   ): Promise<any | null> {
     return new Promise((resolve, reject) => {
-      let url = basePath + '/api/element-basic-info/{element_id}/documents';
-      url = url.replace('{element_id}', params['elementId'] + '');
+      let url = basePath + '/api/element-basic-info/{id}/documents';
+      url = url.replace('{id}', params['id'] + '');
 
       const configs: IRequestConfig = getConfigs('post', 'application/json', url, options);
 
@@ -532,18 +532,18 @@ export class ElementBasicInfoService {
   /**
    * 移除关联文档
    */
-  static removeRelatedDocumentApiElementBasicInfoElementIdDocumentsDelete(
+  static removeRelatedDocumentApiElementBasicInfoIdDocumentsDelete(
     params: {
       /**  */
-      elementId: number;
+      id: string;
       /**  */
       ossPath: string;
     } = {} as any,
     options: IRequestOptions = {}
   ): Promise<any | null> {
     return new Promise((resolve, reject) => {
-      let url = basePath + '/api/element-basic-info/{element_id}/documents';
-      url = url.replace('{element_id}', params['elementId'] + '');
+      let url = basePath + '/api/element-basic-info/{id}/documents';
+      url = url.replace('{id}', params['id'] + '');
 
       const configs: IRequestConfig = getConfigs('delete', 'application/json', url, options);
       configs.params = { oss_path: params['ossPath'] };

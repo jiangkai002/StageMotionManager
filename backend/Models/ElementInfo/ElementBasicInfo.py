@@ -68,5 +68,5 @@ class ElementBasicInfoCollection:
     def create_indexes(cls):
         """创建索引"""
         collection = cls.get_collection()
-        collection.create_index("element_id", unique=True)
+        collection.create_index("name")
         collection.create_index("type")
